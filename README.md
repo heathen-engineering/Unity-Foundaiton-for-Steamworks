@@ -58,7 +58,7 @@ The following core features are covered:
 
 1.  In Unity, go to `Window > Package Manager`.
 2.  Click **+** \> **Add package from git URL**.
-3.  Enter: `https://github.com/heathen-engineering/Unity-Foundaiton-for-Steamworks.git?path=/com.heathen.steamworksfoundation`
+3.  Enter: `https://github.com/heathen-engineering/Unity-Foundation-for-Steamworks.git?path=/com.heathen.steamworksfoundation`
 
 **Steamworks.NET** is installed automatically. On the first domain reload after Foundation is imported, the editor will detect if Steamworks.NET is missing and prompt you to install the recommended version. If you need a specific version, menu items are available under `Help > Heathen > Steamworks Foundation > Install Steamworks.NET …`.
 
