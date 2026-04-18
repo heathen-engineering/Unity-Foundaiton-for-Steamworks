@@ -21,18 +21,17 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamLeaderboardData), "Ranks", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
-    [RequireComponent(typeof(SteamLeaderboardDataEvents))]
     public class SteamLeaderboardRank : MonoBehaviour
     {
         public TMPro.TextMeshProUGUI label;
 
-        private SteamLeaderboardData       _mInspector;
-        private SteamLeaderboardDataEvents _mEvents;
+        private SteamLeaderboardData        _mInspector;
+        private ISteamLeaderboardDataEvents _mEvents;
 
         private void Awake()
         {
             _mInspector = GetComponent<SteamLeaderboardData>();
-            _mEvents    = GetComponent<SteamLeaderboardDataEvents>();
+            _mEvents    = GetComponent<ISteamLeaderboardDataEvents>();
 
             if (_mEvents != null)
             {

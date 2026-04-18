@@ -25,13 +25,13 @@ namespace Heathen.SteamworksIntegration
     {
         public TMPro.TextMeshProUGUI label;
 
-        private SteamLeaderboardData       _mInspector;
-        private SteamLeaderboardDataEvents _mEvents;
+        private SteamLeaderboardData        _mInspector;
+        private ISteamLeaderboardDataEvents _mEvents;
 
         private void Awake()
         {
             _mInspector = GetComponent<SteamLeaderboardData>();
-            _mEvents    = GetComponent<SteamLeaderboardDataEvents>();
+            _mEvents    = GetComponent<ISteamLeaderboardDataEvents>();
             if (_mEvents != null)
                 _mEvents.onChange.AddListener(HandleOnChanged);
             if (_mInspector.Data.IsValid && label != null)

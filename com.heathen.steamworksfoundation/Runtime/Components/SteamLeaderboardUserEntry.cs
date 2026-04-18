@@ -25,19 +25,18 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamLeaderboardData), "User Entries", nameof(entryUI))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
-    [RequireComponent(typeof(SteamLeaderboardDataEvents))]
     public class SteamLeaderboardUserEntry : MonoBehaviour
     {
         [Tooltip("A component that implements ILeaderboardEntryDisplay, e.g. SteamLeaderboardEntryUI.")]
         public SteamLeaderboardEntryUI entryUI;
 
-        private SteamLeaderboardData       _mInspector;
-        private SteamLeaderboardDataEvents _mEvents;
+        private SteamLeaderboardData        _mInspector;
+        private ISteamLeaderboardDataEvents _mEvents;
 
         private void Awake()
         {
             _mInspector = GetComponent<SteamLeaderboardData>();
-            _mEvents    = GetComponent<SteamLeaderboardDataEvents>();
+            _mEvents    = GetComponent<ISteamLeaderboardDataEvents>();
 
             if (_mEvents != null)
             {

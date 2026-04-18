@@ -13,15 +13,22 @@
 // limitations under the License.
 
 #if !DISABLESTEAMWORKS && STEAM_INSTALLED
+using UnityEngine.Events;
+
 namespace Heathen.SteamworksIntegration
 {
     /// <summary>
-    /// Implemented by components that display a single <see cref="LeaderboardEntry"/>.
-    /// Used by <see cref="SteamLeaderboardDisplay"/> to populate instantiated entry prefabs.
+    /// Common interface implemented by both Foundation's and Toolkit's
+    /// <c>SteamLeaderboardDataEvents</c> components. Child leaderboard display
+    /// components reference this interface so they compile regardless of which
+    /// version of the events component is present.
     /// </summary>
-    public interface ILeaderboardEntryDisplay
+    public interface ISteamLeaderboardDataEvents
     {
-        LeaderboardEntry Entry { get; set; }
+        UnityEvent onChange { get; }
+        UnityEvent onFindOrCreate { get; }
+        UnityEvent onFindOrCreateFailure { get; }
+        UnityEvent<LeaderboardScoreUploaded> onRankChanged { get; }
     }
 }
 #endif

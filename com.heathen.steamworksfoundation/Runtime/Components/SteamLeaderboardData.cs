@@ -56,17 +56,17 @@ namespace Heathen.SteamworksIntegration
             }
         }
 
-        private LeaderboardData           _data;
-        private SteamLeaderboardDataEvents _events;
+        private LeaderboardData            _data;
+        private ISteamLeaderboardDataEvents _events;
 
         private void Awake()
         {
-            _events = GetComponent<SteamLeaderboardDataEvents>();
+            _events = GetComponent<ISteamLeaderboardDataEvents>();
         }
 
         private void Start()
         {
-            _events = GetComponent<SteamLeaderboardDataEvents>();
+            _events = GetComponent<ISteamLeaderboardDataEvents>();
 
             if (SteamTools.Interface.IsReady)
                 ResolveBoard();

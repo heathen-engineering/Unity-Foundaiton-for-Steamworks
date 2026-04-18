@@ -21,13 +21,18 @@ namespace Heathen.SteamworksIntegration
     [ModularEvents(typeof(SteamLeaderboardData))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
-    public class SteamLeaderboardDataEvents : MonoBehaviour
+    public class SteamLeaderboardDataEvents : MonoBehaviour, ISteamLeaderboardDataEvents
     {
         [EventField] public UnityEvent                           onChange;
         [EventField] public UnityEvent                           onFindOrCreate;
         [EventField] public UnityEvent                           onFindOrCreateFailure;
         [EventField] public UnityEvent<LeaderboardScoreUploaded> onScoreUploaded;
         [EventField] public UnityEvent<LeaderboardScoreUploaded> onRankChanged;
+
+        UnityEvent ISteamLeaderboardDataEvents.onChange => onChange;
+        UnityEvent ISteamLeaderboardDataEvents.onFindOrCreate => onFindOrCreate;
+        UnityEvent ISteamLeaderboardDataEvents.onFindOrCreateFailure => onFindOrCreateFailure;
+        UnityEvent<LeaderboardScoreUploaded> ISteamLeaderboardDataEvents.onRankChanged => onRankChanged;
 
         private SteamLeaderboardData _mInspector;
 
