@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if UNITY_EDITOR && !DISABLESTEAMWORKS && STEAM_INSTALLED && !HEATHEN_TOOLKIT_INSTALLED
+#if UNITY_EDITOR && !DISABLESTEAMWORKS && STEAM_INSTALLED
 using System;
 using System.IO;
 using System.Linq;
