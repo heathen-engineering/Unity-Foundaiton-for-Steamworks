@@ -311,7 +311,7 @@ namespace Heathen.SteamworksIntegration.API
 
                         if (IsDebugging)
                         {
-                            Debug.Log("Steam API has been initialized with App ID: " + SteamUtils.GetAppID() + ".");
+                            Debug.Log("Steam API has been initialised with App ID: " + SteamUtils.GetAppID() + ".");
                         }
 
                         if (appId != SteamUtils.GetAppID())
@@ -786,7 +786,7 @@ namespace Heathen.SteamworksIntegration.API
 
                         if (IsDebugging)
                         {
-                            Debug.Log("Steam API has been initialized with App ID: " + SteamGameServerUtils.GetAppID());
+                            Debug.Log("Steam API has been initialised with App ID: " + SteamGameServerUtils.GetAppID());
                         }
 
                         if (appId != SteamGameServerUtils.GetAppID())

@@ -73,8 +73,8 @@ namespace SteamTools
     public delegate void SteamLobbyGameServerDelegate(LobbyData lobby, CSteamID server, string ip, ushort port);
     /// <summary>Invoked when a lobby invitation arrives.</summary>
     public delegate void SteamLobbyInviteDelegate(UserData fromUser, LobbyData forLobby, GameData inGame);
-    /// <summary>Invoked when the Steam favorites list changes.</summary>
-    public delegate void SteamFavoritesListChangeDelegate(string ip, ushort queryPort, ushort connPort, AppData app, uint flags, bool add, uint accountId);
+    /// <summary>Invoked when the Steam favourites list changes.</summary>
+    public delegate void SteamFavouritesListChangeDelegate(string ip, ushort queryPort, ushort connPort, AppData app, uint flags, bool add, uint accountId);
     /// <summary>Invoked when the user requests to join a lobby from the Steam UI.</summary>
     public delegate void SteamLobbyJoinRequestDelegate(LobbyData lobby, UserData user);
     /// <summary>Invoked when the game overlay is activated or deactivated.</summary>
@@ -310,7 +310,7 @@ namespace SteamTools
             OnLobbyGameServer                  = null;
             OnLobbyLeave                       = null;
             OnLobbyInvite                      = null;
-            OnFavoritesListChanged             = null;
+            OnFavouritesListChanged             = null;
             OnLobbyJoinRequested               = null;
             OnGameOverlayActivated             = null;
             OnGameServerChangeRequested        = null;
@@ -392,8 +392,8 @@ namespace SteamTools
         public static event SteamLobbyDataDelegate         OnLobbyLeave;
         /// <summary>Fired when a lobby invitation arrives.</summary>
         public static event SteamLobbyInviteDelegate       OnLobbyInvite;
-        /// <summary>Fired when the Steam favorites list changes.</summary>
-        public static event SteamFavoritesListChangeDelegate OnFavoritesListChanged;
+        /// <summary>Fired when the Steam favourites list changes.</summary>
+        public static event SteamFavouritesListChangeDelegate OnFavouritesListChanged;
         /// <summary>Fired when the user requests to join a lobby from the Steam UI.</summary>
         public static event SteamLobbyJoinRequestDelegate  OnLobbyJoinRequested;
         /// <summary>Fired when the Steam game overlay is activated or deactivated.</summary>
@@ -467,7 +467,7 @@ namespace SteamTools
         private static Callback<LobbyChatUpdate_t>                   _lobbyChatUpdate;
         private static Callback<LobbyGameCreated_t>                  _lobbyGameCreated;
         private static Callback<LobbyInvite_t>                       _lobbyInvite;
-        private static Callback<FavoritesListChanged_t>              _favoritesListChanged;
+        private static Callback<FavoritesListChanged_t>              _favouritesListChanged;
         private static Callback<GameLobbyJoinRequested_t>            _gameLobbyJoinRequested;
         private static Callback<GameOverlayActivated_t>              _gameOverlayActivated;
         private static Callback<GameServerChangeRequested_t>         _gameServerChangeRequested;
@@ -507,7 +507,7 @@ namespace SteamTools
             _lobbyChatUpdate?.Dispose();                    _lobbyChatUpdate = null;
             _lobbyGameCreated?.Dispose();                   _lobbyGameCreated = null;
             _lobbyInvite?.Dispose();                        _lobbyInvite = null;
-            _favoritesListChanged?.Dispose();               _favoritesListChanged = null;
+            _favouritesListChanged?.Dispose();               _favouritesListChanged = null;
             _gameLobbyJoinRequested?.Dispose();             _gameLobbyJoinRequested = null;
             _gameOverlayActivated?.Dispose();               _gameOverlayActivated = null;
             _gameServerChangeRequested?.Dispose();          _gameServerChangeRequested = null;
@@ -596,8 +596,8 @@ namespace SteamTools
                 OnLobbyGameServer?.Invoke((LobbyData)new CSteamID(p.m_ulSteamIDLobby), new CSteamID(p.m_ulSteamIDGameServer), Utilities.IPUintToString(p.m_unIP), p.m_usPort));
             _lobbyInvite                    = Callback<LobbyInvite_t>.Create(p =>
                 OnLobbyInvite?.Invoke((UserData)new CSteamID(p.m_ulSteamIDUser), (LobbyData)new CSteamID(p.m_ulSteamIDLobby), p.m_ulGameID));
-            _favoritesListChanged           = Callback<FavoritesListChanged_t>.Create(p =>
-                OnFavoritesListChanged?.Invoke(Utilities.IPUintToString(p.m_nIP), Convert.ToUInt16(p.m_nQueryPort), Convert.ToUInt16(p.m_nConnPort), new AppId_t(p.m_nAppID), p.m_nFlags, p.m_bAdd, p.m_unAccountId.m_AccountID));
+            _favouritesListChanged           = Callback<FavoritesListChanged_t>.Create(p =>
+                OnFavouritesListChanged?.Invoke(Utilities.IPUintToString(p.m_nIP), Convert.ToUInt16(p.m_nQueryPort), Convert.ToUInt16(p.m_nConnPort), new AppId_t(p.m_nAppID), p.m_nFlags, p.m_bAdd, p.m_unAccountId.m_AccountID));
             _gameLobbyJoinRequested         = Callback<GameLobbyJoinRequested_t>.Create(p =>
                 OnLobbyJoinRequested?.Invoke((LobbyData)p.m_steamIDLobby, (UserData)p.m_steamIDFriend));
             _gameOverlayActivated           = Callback<GameOverlayActivated_t>.Create(p =>

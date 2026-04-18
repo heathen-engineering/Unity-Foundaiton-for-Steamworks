@@ -41,7 +41,7 @@ namespace Heathen.SteamworksIntegration
         /// <summary>
         /// Downloads the UGC file attached to this entry and deserializes it as <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="T">A JsonUtility-serializable type.</typeparam>
+        /// <typeparam name="T">A JsonUtility-serialisable type.</typeparam>
         /// <param name="callback">Receives the result and a failure flag. If failure is true an error occurred.</param>
         public void GetAttachedUgc<T>(Action<T, bool> callback = null)
         {

@@ -293,9 +293,9 @@ namespace Heathen.SteamworksIntegration
         }
 
         /// <summary>
-        /// Read server configuration from byte[] representing the string serialized configuration
+        /// Read server configuration from byte[] representing the string serialised configuration
         /// </summary>
-        /// <param name="serializedData"></param>
+        /// <param name="serialisedData"></param>
         /// <param name="config"></param>
         /// <returns></returns>
         public static bool Get(byte[] serializedData, out SteamGameServerConfiguration config)
@@ -322,13 +322,13 @@ namespace Heathen.SteamworksIntegration
         }
 
         /// <summary>
-        /// Returns the JSON formatted serialized form of the configuration, this can be written to disk for later reading
+        /// Returns the JSON formatted serialised form of the configuration, this can be written to disk for later reading
         /// </summary>
         /// <returns></returns>
         public override string ToString() => JsonUtility.ToJson(this);
 
         /// <summary>
-        /// Get the bytes of the serialized configuration for writing to disk
+        /// Get the bytes of the serialised configuration for writing to disk
         /// </summary>
         /// <returns></returns>
         public byte[] ToBytes() => Encoding.UTF8.GetBytes(ToString());
@@ -352,7 +352,7 @@ namespace Heathen.SteamworksIntegration
             }
         }
         /// <summary>
-        /// Same as <see cref="Get(string, out SteamGameServerConfiguration)"/> this will attempt to read the file at the location and deserialize it as JSON data
+        /// Same as <see cref="Get(string, out SteamGameServerConfiguration)"/> this will attempt to read the file at the location and deserialise it as JSON data
         /// </summary>
         /// <param name="path">The path of a file to load</param>
         /// <param name="config">The resulting configuration</param>
