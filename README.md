@@ -5,7 +5,7 @@
 ![Unity](https://img.shields.io/badge/Unity-6%20%2B-black?style=flat-square&logo=unity&logoColor=white)
 [![Dependency](https://img.shields.io/badge/Dependency-Steamworks.NET-lightgrey?style=flat-square)](https://steamworks.github.io/)
 
-A lightweight, modular integration layer for [Steamworks.NET](https://steamworks.github.io/) that exposes Steam features through ScriptableObject-based components and a type-safe generated code wrapper.
+A lightweight, modular integration layer for [Steamworks.NET](https://steamworks.github.io/) that exposes Steam features through flexable components and a type-safe generated code wrapper.
 
 -----
 
