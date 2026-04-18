@@ -1,0 +1,26 @@
+{
+  "name": "com.heathen.steamworksfoundation",
+  "displayName": "Foundation for Steamworks",
+  "version": "1.63.1",
+  "unity": "6000.0",
+  "author": {
+    "name": "Heathen Group",
+    "email": "support@heathen.group",
+    "url": "https://heathen.group"
+  },
+  "documentationUrl": "https://heathen.group/kb/foundation-steamworks/",
+  "changelogUrl": "https://github.com/heathen-engineering/Unity-Foundaiton-for-Steamworks/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/heathen-engineering/Unity-Foundaiton-for-Steamworks/blob/main/LICENSE",
+  "keywords": [
+    "steamworks",
+    "steam",
+    "achievements",
+    "leaderboards",
+    "stats"
+  ],
+  "description": "Open-source foundation layer for Steamworks integration. Provides Stats, Achievements, Leaderboards and User features via a lightweight, partially-generated quality-of-life API. Can be used standalone or as the base for Toolkit for Steamworks.",
+  "license": "Apache-2.0",
+  "dependencies": {
+  },
+  "samples": []
+}

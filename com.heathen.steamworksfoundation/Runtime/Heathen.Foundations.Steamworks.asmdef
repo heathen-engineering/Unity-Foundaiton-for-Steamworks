@@ -1,0 +1,69 @@
+{
+    "name": "Heathen.Foundations.Steamworks",
+    "rootNamespace": "Heathen.SteamworksIntegration",
+    "references": [
+        "com.rlabrecque.steamworks.net",
+        "Unity.TextMeshPro",
+        "Unity.Localization",
+        "UniTask",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "!DISABLESTEAMWORKS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "",
+            "define": "STEAM_INSTALLED"
+        },
+        {
+            "name": "com.heathen.steamworks",
+            "expression": "",
+            "define": "HEATHEN_TOOLKIT_INSTALLED"
+        },
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "[0,2025]",
+            "define": "STEAM_LEGACY"
+        },
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "[2025.161,2025.161.9999]",
+            "define": "STEAM_161"
+        },
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "[2025.162,2025.162.9999]",
+            "define": "STEAM_162"
+        },
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "[2025.163,2025.163.9999]",
+            "define": "STEAM_163"
+        },
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": "UNITASK_INSTALLED"
+        },
+        {
+            "name": "com.unity.localization",
+            "expression": "1.5.7",
+            "define": "LOCALIZED"
+        }
+    ],
+    "noEngineReferences": false
+}
