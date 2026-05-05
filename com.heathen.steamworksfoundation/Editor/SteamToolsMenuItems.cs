@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if UNITY_EDITOR && !HEATHEN_TOOLKIT_INSTALLED
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,7 +89,8 @@ namespace Heathen.SteamworksIntegration
                 "Install", "Cancel");
 
             if (install)
-                yield return DoInstall(SteamworksNetVersion163);
+                StartCoroutine(DoInstall(SteamworksNetVersion163));
+            yield break;
 #endif
         }
 
