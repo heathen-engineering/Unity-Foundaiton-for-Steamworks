@@ -10,7 +10,7 @@ A lightweight, modular integration layer for [Steamworks.NET](https://steamworks
 -----
 
 ## 🛠 Also Available For
-[![Godot](https://img.shields.io/badge/Godot-4.6%20%2B-478CBF?style=flat-square&logo=godotengine&logoColor=white)](https://github.com/heathen-engineering/Godot-Foundation-for-Steamworks)
+[![Godot](https://img.shields.io/badge/Godot-4.6%20%2B-478CBF?style=for-the-badge&logo=godotengine&logoColor=white)](https://github.com/heathen-engineering/Godot-Foundation-for-Steamworks)
 [![O3DE](https://img.shields.io/badge/O3DE-25.10%20%2B-%2300AEEF?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAxTDEgNy40djkuMkwxMiAyM2wxMS02LjRWNy40TDEyIDF6bTkuMSAxNC45TDExLjUgMjEuM2wtOC42LTYuNFY4LjFsOC42LTYuNCA5LjEgNi40djYuOHpNMTEuNSA0LjZMMi45IDkuNnY0LjhsOC42IDUuMSA4LjYtNS4xVjkuNmwtOC42LTUuMHoiLz48L3N2Zz4=)](https://github.com/heathen-engineering/O3DE-Foundation-for-Steamworks)
 
 -----
