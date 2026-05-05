@@ -66,6 +66,10 @@ namespace Heathen.SteamworksIntegration.API
             _shutdownHandlers = new List<Action>();
             _unloadHandlers   = new List<Action>();
             InputInitHandler  = null;
+
+            Initialised                = false;
+            HasInitialisationError     = false;
+            InitialisationErrorMessage = string.Empty;
         }
 
         // -----------------------------------------------------------------------

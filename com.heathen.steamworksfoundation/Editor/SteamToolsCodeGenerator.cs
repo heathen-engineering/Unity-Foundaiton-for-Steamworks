@@ -232,6 +232,9 @@ namespace Heathen.SteamworksIntegration
         {
             sb.AppendLine("        private static bool _initialised;");
             sb.AppendLine();
+            sb.AppendLine("        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]");
+            sb.AppendLine("        static void ResetStatics() { _initialised = false; }");
+            sb.AppendLine();
             sb.AppendLine("        public static void Initialise()");
             sb.AppendLine("        {");
             sb.AppendLine("            if (_initialised) return;");
