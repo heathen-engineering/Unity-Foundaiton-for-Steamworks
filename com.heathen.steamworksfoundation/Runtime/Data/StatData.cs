@@ -95,6 +95,22 @@ namespace Heathen.SteamworksIntegration
         /// <returns>True if the request was accepted</returns>
         public readonly bool GetValue(UserData user, out float value) => API.StatsAndAchievements.Client.GetStat(user, this, out value);
         /// <summary>
+        /// The global aggregated long value of the stat. Requires <see cref="API.StatsAndAchievements.Client.RequestGlobalStats"/> to have completed first.
+        /// </summary>
+        public readonly long GlobalLongValue()
+        {
+            API.StatsAndAchievements.Client.GetGlobalStat(id, out long value);
+            return value;
+        }
+        /// <summary>
+        /// The global aggregated double value of the stat. Requires <see cref="API.StatsAndAchievements.Client.RequestGlobalStats"/> to have completed first.
+        /// </summary>
+        public readonly double GlobalDoubleValue()
+        {
+            API.StatsAndAchievements.Client.GetGlobalStat(id, out double value);
+            return value;
+        }
+        /// <summary>
         /// Set the value of the stat
         /// <para>This sets the value in the local cash, and can be called as frequently as you like. When ready call <see cref="Store"/>, store should only be called periodically and is rate limited by Valve</para>
         /// </summary>
