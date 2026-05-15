@@ -15,8 +15,6 @@
 using Steamworks;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -81,7 +79,9 @@ namespace Heathen.SteamworksIntegration.API
                 _downloadQueue = null;
                 _uploadQueue = null;
                 _findOrCreateQueue = null;
-                RequestTimeout = 30f;
+                _downloadWorking = false;
+                _uploadWorking = false;
+                _findOrCreateWorking = false;
 
                 OnScoreUploaded = new();
             }
@@ -103,197 +103,105 @@ namespace Heathen.SteamworksIntegration.API
             private static Queue<UploadScoreRequest> _uploadQueue;
             private static Queue<FindOrCreateRequest> _findOrCreateQueue;
 
+            private static bool _downloadWorking;
+            private static bool _uploadWorking;
+            private static bool _findOrCreateWorking;
+
+            // The Steam API call and CallResult.Set() must both happen on the main thread (the same
+            // thread that calls SteamAPI.RunCallbacks). If .Set() is registered on a background
+            // thread, RunCallbacks can dispatch the result before .Set() is reached, silently
+            // dropping the callback. All three Execute methods below run on the caller's thread
+            // (main thread) and chain to the next queued item from within the callback.
+
             private static void ExecuteDownloadRequest()
             {
-                var bgWorker = new BackgroundWorker();
-                bgWorker.DoWork += (_, _) =>
+                if (_downloadWorking || _downloadQueue == null || _downloadQueue.Count == 0)
+                    return;
+
+                _downloadWorking = true;
+                var request = _downloadQueue.Peek();
+
+                if (request.Callback == null)
                 {
-                    bool waiting = false;
+                    _downloadQueue.Dequeue();
+                    _downloadWorking = false;
+                    ExecuteDownloadRequest();
+                    return;
+                }
 
-                    while (_downloadQueue.Count > 0)
-                    {
-                        //Check on the next request
-                        var request = _downloadQueue.Peek();
+                SteamAPICall_t handle;
+                if (request.UserRequest)
+                    handle = SteamUserStats.DownloadLeaderboardEntriesForUsers(request.Leaderboard, request.Users, request.Users.Length);
+                else
+                    handle = SteamUserStats.DownloadLeaderboardEntries(request.Leaderboard, request.Request, request.Start, request.End);
 
-                        //If the request is still valid
-                        if (request.Callback != null)
-                        {
-                            //Initiate the request with Valve
-                            if (request.UserRequest)
-                            {
-                                var handle = SteamUserStats.DownloadLeaderboardEntriesForUsers(request.Leaderboard, request.Users, request.Users.Length);
-
-                                //Set our waiting and time out
-                                waiting = true;
-
-                                _mLeaderboardScoresDownloadedT.Set(handle, (results, error) =>
-                                {
-                                    request.Callback.Invoke(ProcessScoresDownloaded(results, error, request.MaxDetailsPerEntry), error);
-                                    waiting = false;
-                                });
-
-                                //Wait until we get a result
-                                while (waiting)
-                                    Thread.Sleep(100);
-                            }
-                            else
-                            {
-                                var handle = SteamUserStats.DownloadLeaderboardEntries(request.Leaderboard, request.Request, request.Start, request.End);
-
-                                //Set our waiting and time out
-                                waiting = true;
-
-                                //Set our call result handler
-                                _mLeaderboardScoresDownloadedT.Set(handle, (results, error) =>
-                                {
-                                    request.Callback.Invoke(ProcessScoresDownloaded(results, error, request.MaxDetailsPerEntry), error);
-                                    waiting = false;
-                                });
-
-                                //Wait until we get a result
-                                while (waiting)
-                                    Thread.Sleep(100);
-                            }
-                        }
-
-                        _downloadQueue.Dequeue();
-                    }
-                };
-                bgWorker.RunWorkerCompleted += (_, _) =>
+                _mLeaderboardScoresDownloadedT.Set(handle, (results, error) =>
                 {
-                    bgWorker.Dispose();
-                };
-                bgWorker.RunWorkerAsync();
+                    request.Callback.Invoke(ProcessScoresDownloaded(results, error, request.MaxDetailsPerEntry), error);
+                    _downloadQueue.Dequeue();
+                    _downloadWorking = false;
+                    ExecuteDownloadRequest();
+                });
             }
 
             private static void ExecuteUploadRequest()
             {
-                var bgWorker = new BackgroundWorker();
-                bgWorker.DoWork += (_, _) =>
+                if (_uploadWorking || _uploadQueue == null || _uploadQueue.Count == 0)
+                    return;
+
+                _uploadWorking = true;
+                var request = _uploadQueue.Peek();
+
+                var handle = SteamUserStats.UploadLeaderboardScore(request.Leaderboard, request.Method, request.Score, request.Details, request.Details?.Length ?? 0);
+
+                _mLeaderboardScoreUploadedT.Set(handle, (r, e) =>
                 {
-                    bool waiting = false;
-
-                    while (_uploadQueue.Count > 0)
-                    {
-                        //Check on the next request
-                        var request = _uploadQueue.Peek();
-
-                        //If the request is still valid
-
-                        //Initiate the request with Valve
-                        var handle = SteamUserStats.UploadLeaderboardScore(request.Leaderboard, request.Method, request.Score, request.Details, request.Details?.Length ?? 0);
-
-                        waiting = true;
-
-                        _mLeaderboardScoreUploadedT.Set(handle, (r, e) =>
-                        {
-                            OnScoreUploaded?.Invoke(r, e);
-                            request.Callback?.Invoke(r, e);
-                            waiting = false;
-                        });
-
-                        //Wait until we get a result
-                        while (waiting)
-                            Thread.Sleep(100);
-
-                        if (waiting)
-                        {
-                            request.Callback?.Invoke(default, true);
-                            Debug.LogWarning("Leaderboard upload request exceeded the timeout of " + RequestTimeout + ", the callback will be called as a failure and next request serviced. The request may still come in at a later time.");
-                        }
-
-                        _uploadQueue.Dequeue();
-                    }
-                };
-                bgWorker.RunWorkerCompleted += (_, _) =>
-                    {
-                        bgWorker.Dispose();
-                    };
-                bgWorker.RunWorkerAsync();
+                    OnScoreUploaded?.Invoke(r, e);
+                    request.Callback?.Invoke(r, e);
+                    _uploadQueue.Dequeue();
+                    _uploadWorking = false;
+                    ExecuteUploadRequest();
+                });
             }
 
             private static void ExecuteFindOrCreateRequest()
             {
-                var bgWorker = new BackgroundWorker();
-                bgWorker.DoWork += (_, _) =>
-                {
-                    bool waiting = false;
+                if (_findOrCreateWorking || _findOrCreateQueue == null || _findOrCreateQueue.Count == 0)
+                    return;
 
-                    while (_findOrCreateQueue.Count > 0)
+                _findOrCreateWorking = true;
+                var request = _findOrCreateQueue.Peek();
+
+                if (request.Callback == null)
+                {
+                    _findOrCreateQueue.Dequeue();
+                    _findOrCreateWorking = false;
+                    ExecuteFindOrCreateRequest();
+                    return;
+                }
+
+                SteamAPICall_t handle;
+                if (request.CreateIfMissing)
+                    handle = SteamUserStats.FindOrCreateLeaderboard(request.APIName, request.SortMethod, request.DisplayType);
+                else
+                    handle = SteamUserStats.FindLeaderboard(request.APIName);
+
+                _mLeaderboardFindResultT.Set(handle, (results, error) =>
+                {
+                    var board = new LeaderboardData
                     {
-                        //Check on the next request
-                        var request = _findOrCreateQueue.Peek();
-
-                        //If the request is still valid
-                        if (request.Callback != null)
-                        {
-                            //Initiate the request with Valve
-                            if (request.CreateIfMissing)
-                            {
-                                var handle = SteamUserStats.FindOrCreateLeaderboard(request.APIName, request.SortMethod, request.DisplayType);
-
-                                //Set our waiting and time out
-                                waiting = true;
-
-                                _mLeaderboardFindResultT.Set(handle, (results, error) =>
-                                {
-                                    var board = new LeaderboardData
-                                    {
-                                        apiName = request.APIName,
-                                        id = results.m_hSteamLeaderboard
-                                    };
-                                    SteamTools.Interface.AddBoard(board);
-                                    request.Callback(board,
-                                    error);
-                                    waiting = false;
-                                });
-
-                                //Wait until we get a result
-                                while (waiting)
-                                    Thread.Sleep(10);
-                            }
-                            else
-                            {
-                                var handle = SteamUserStats.FindLeaderboard(request.APIName);
-
-                                //Set our waiting and time out
-                                waiting = true;
-
-                                //Set our call result handler
-                                _mLeaderboardFindResultT.Set(handle, (results, error) =>
-                                {
-                                    var board = new LeaderboardData
-                                    {
-                                        apiName = request.APIName,
-                                        id = results.m_hSteamLeaderboard
-                                    };
-                                    SteamTools.Interface.AddBoard(board);
-
-                                    request.Callback(board,
-                                    error);
-                                    waiting = false;
-                                });
-
-                                //Wait until we get a result
-                                while (waiting)
-                                    Thread.Sleep(10);
-                            }
-                        }
-
-                        _findOrCreateQueue.Dequeue();
-                    }
-                };
-                bgWorker.RunWorkerCompleted += (_, _) =>
-                {
-                    bgWorker.Dispose();
-                };
-                bgWorker.RunWorkerAsync();
+                        apiName = request.APIName,
+                        id = results.m_hSteamLeaderboard
+                    };
+                    if (!error)
+                        SteamTools.Interface.AddBoard(board);
+                    request.Callback(board, error);
+                    _findOrCreateQueue.Dequeue();
+                    _findOrCreateWorking = false;
+                    ExecuteFindOrCreateRequest();
+                });
             }
             
-            /// <summary>
-            /// The amount of time to wait for Valve to respond to Leaderboard requests.
-            /// </summary>
-            public static float RequestTimeout { get; set; } = 30f;
             /// <summary>
             /// The number of pending requests to download scores from a leaderboard
             /// </summary>
@@ -351,8 +259,7 @@ namespace Heathen.SteamworksIntegration.API
 
                 _downloadQueue.Enqueue(nRequest);
 
-                //If we only have 1 enqueued, then we need to start the executing if we have more than it's already running
-                if (_downloadQueue.Count == 1)
+                if (!_downloadWorking)
                     ExecuteDownloadRequest();
             }
 
@@ -383,15 +290,14 @@ namespace Heathen.SteamworksIntegration.API
                 {
                     UserRequest = true,
                     Leaderboard = leaderboard,
-                    Users = users,
+                    Users = (CSteamID[])users.Clone(),
                     MaxDetailsPerEntry = maxDetailsPerEntry,
                     Callback = callback
                 };
 
                 _downloadQueue.Enqueue(nRequest);
 
-                //If we only have 1 enqueued, then we need to start the executing if we have more than it's already running
-                if (_downloadQueue.Count == 1)
+                if (!_downloadWorking)
                     ExecuteDownloadRequest();
             }
 
@@ -406,8 +312,15 @@ namespace Heathen.SteamworksIntegration.API
             /// <param name="maxDetailsPerEntry">The maximum number of additional data details to include for each entry.</param>
             /// <param name="callback">The callback to invoke when the request is completed. It provides an array of retrieved leaderboard entries and a boolean indicating success or failure.</param>
             public static void DownloadEntries(LeaderboardData leaderboard, UserData[] users, int maxDetailsPerEntry,
-                Action<LeaderboardEntry[], bool> callback) => DownloadEntries(leaderboard,
-                Array.ConvertAll(users, (i) => i.id), maxDetailsPerEntry, callback);
+                Action<LeaderboardEntry[], bool> callback)
+            {
+                if (users == null || users.Length == 0)
+                {
+                    callback?.Invoke(Array.Empty<LeaderboardEntry>(), false);
+                    return;
+                }
+                DownloadEntries(leaderboard, Array.ConvertAll(users, i => i.id), maxDetailsPerEntry, callback);
+            }
             /// <summary>
             /// Gets a leaderboard by name.
             /// </summary>
@@ -429,7 +342,7 @@ namespace Heathen.SteamworksIntegration.API
                     CreateIfMissing = false
                 });
 
-                if (_findOrCreateQueue.Count == 1)
+                if (!_findOrCreateWorking)
                     ExecuteFindOrCreateRequest();
             }
             /// <summary>
@@ -474,7 +387,7 @@ namespace Heathen.SteamworksIntegration.API
                     DisplayType = displayType
                 });
 
-                if (_findOrCreateQueue.Count == 1)
+                if (!_findOrCreateWorking)
                     ExecuteFindOrCreateRequest();
             }
             /// <summary>
@@ -532,8 +445,7 @@ namespace Heathen.SteamworksIntegration.API
 
                 _uploadQueue.Enqueue(nRequest);
 
-                //If we only have 1 enqueued, then we need to start the executing if we have more than it's already running
-                if (_uploadQueue.Count == 1)
+                if (!_uploadWorking)
                     ExecuteUploadRequest();
             }
 
@@ -554,24 +466,11 @@ namespace Heathen.SteamworksIntegration.API
 
                     for (int i = 0; i < param.m_cEntryCount; i++)
                     {
-                        LeaderboardEntry_t buffer;
-                        int[] details = null;
-
-                        if (maxDetailEntries < 1)
-                            SteamUserStats.GetDownloadedLeaderboardEntry(param.m_hSteamLeaderboardEntries, i, out buffer, details, maxDetailEntries);
-                        else
-                        {
-                            details = new int[maxDetailEntries];
-                            SteamUserStats.GetDownloadedLeaderboardEntry(param.m_hSteamLeaderboardEntries, i, out buffer, details, maxDetailEntries);
-                        }
-                        
-                        var record = new LeaderboardEntry
-                        {
-                            Entry = buffer,
-                            Details = details
-                        };
-
-                        entries[i] = record;
+                        var details = maxDetailEntries > 0 ? new int[maxDetailEntries] : null;
+                        SteamUserStats.GetDownloadedLeaderboardEntry(
+                            param.m_hSteamLeaderboardEntries, i, out LeaderboardEntry_t buffer,
+                            details, Math.Max(0, maxDetailEntries));
+                        entries[i] = new LeaderboardEntry { Entry = buffer, Details = details };
                     }
 
                     return entries;
