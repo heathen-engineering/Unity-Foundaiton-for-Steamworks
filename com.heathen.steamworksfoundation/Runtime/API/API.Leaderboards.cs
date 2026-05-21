@@ -107,11 +107,19 @@ namespace Heathen.SteamworksIntegration.API
             private static bool _uploadWorking;
             private static bool _findOrCreateWorking;
 
-            // The Steam API call and CallResult.Set() must both happen on the main thread (the same
-            // thread that calls SteamAPI.RunCallbacks). If .Set() is registered on a background
-            // thread, RunCallbacks can dispatch the result before .Set() is reached, silently
-            // dropping the callback. All three Execute methods below run on the caller's thread
-            // (main thread) and chain to the next queued item from within the callback.
+            // Queue processing is driven by App.CallbackWaitThread_ProgressChanged which calls
+            // ProcessPendingRequests() AFTER SteamAPI.RunCallbacks() completes each tick.
+            // This ensures Set() is never called from within a Set() callback — Steam's native
+            // dispatcher unregisters call results after dispatch, so re-registering from inside
+            // a callback causes the new registration to be immediately unregistered, silently
+            // dropping subsequent callbacks when the queue has more than one item.
+
+            internal static void ProcessPendingRequests()
+            {
+                ExecuteDownloadRequest();
+                ExecuteUploadRequest();
+                ExecuteFindOrCreateRequest();
+            }
 
             private static void ExecuteDownloadRequest()
             {
@@ -140,7 +148,6 @@ namespace Heathen.SteamworksIntegration.API
                     request.Callback.Invoke(ProcessScoresDownloaded(results, error, request.MaxDetailsPerEntry), error);
                     _downloadQueue.Dequeue();
                     _downloadWorking = false;
-                    ExecuteDownloadRequest();
                 });
             }
 
@@ -160,7 +167,6 @@ namespace Heathen.SteamworksIntegration.API
                     request.Callback?.Invoke(r, e);
                     _uploadQueue.Dequeue();
                     _uploadWorking = false;
-                    ExecuteUploadRequest();
                 });
             }
 
@@ -198,7 +204,6 @@ namespace Heathen.SteamworksIntegration.API
                     request.Callback(board, error);
                     _findOrCreateQueue.Dequeue();
                     _findOrCreateWorking = false;
-                    ExecuteFindOrCreateRequest();
                 });
             }
             

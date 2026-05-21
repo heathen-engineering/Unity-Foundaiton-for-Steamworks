@@ -176,6 +176,7 @@ namespace Heathen.SteamworksIntegration.API
         {
 #if !UNITY_SERVER
             SteamAPI.RunCallbacks();
+            Leaderboards.Client.ProcessPendingRequests();
             foreach (var h in _tickHandlers) h();
 #else
             Steamworks.GameServer.RunCallbacks();
