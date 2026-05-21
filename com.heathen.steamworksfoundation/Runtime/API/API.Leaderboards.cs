@@ -60,6 +60,34 @@ namespace Heathen.SteamworksIntegration.API
             public Action<LeaderboardData, bool> Callback;
         }
 
+        private class CallResultPool<T>
+        {
+            private List<CallResult<T>> objects = new List<CallResult<T>>();
+            public CallResult<T> GetInactiveCallResult()
+            {
+                // Locate an object that has turned inactive
+                for (int i = 0; i < objects.Count; i++)
+                {
+                    if (!objects[i].IsActive())
+                    {
+                        // Only preserve active objects plus one inactive object that we return.
+                        for (int j = i+1; j < objects.Count;)
+                        {
+                            if (!objects[j].IsActive())
+                                objects.RemoveAt(j);
+                            else
+                                j++;
+                        }
+                        return objects[i];
+                    }
+                }
+
+                var newObject = CallResult<T>.Create();
+                objects.Add(newObject);
+                return newObject;
+            }
+        }
+
         /// <summary>
         /// A static class providing client-side utilities for interacting with leaderboards in the Heathen Steamworks Integration framework.
         /// </summary>
@@ -73,9 +101,9 @@ namespace Heathen.SteamworksIntegration.API
             [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
             static void Init()
             {
-                _mLeaderboardScoresDownloadedT = null;
-                _mLeaderboardFindResultT = null;
-                _mLeaderboardScoreUploadedT = null;
+                _mLeaderboardScoresDownloadedPool = new CallResultPool<LeaderboardScoresDownloaded_t>();
+                _mLeaderboardFindResultPool = new CallResultPool<LeaderboardFindResult_t>();
+                _mLeaderboardScoreUploadedPool = new CallResultPool<LeaderboardScoreUploaded_t>();
                 _downloadQueue = null;
                 _uploadQueue = null;
                 _findOrCreateQueue = null;
@@ -95,9 +123,9 @@ namespace Heathen.SteamworksIntegration.API
             /// </remarks>
             public static UnityEvent<LeaderboardScoreUploaded, bool> OnScoreUploaded = new();
 
-            private static CallResult<LeaderboardScoresDownloaded_t> _mLeaderboardScoresDownloadedT;
-            private static CallResult<LeaderboardFindResult_t> _mLeaderboardFindResultT;
-            private static CallResult<LeaderboardScoreUploaded_t> _mLeaderboardScoreUploadedT;
+            private static CallResultPool<LeaderboardScoresDownloaded_t> _mLeaderboardScoresDownloadedPool;
+            private static CallResultPool<LeaderboardFindResult_t> _mLeaderboardFindResultPool;
+            private static CallResultPool<LeaderboardScoreUploaded_t> _mLeaderboardScoreUploadedPool;
 
             private static Queue<DownloadScoreRequest> _downloadQueue;
             private static Queue<UploadScoreRequest> _uploadQueue;
@@ -135,7 +163,7 @@ namespace Heathen.SteamworksIntegration.API
                 else
                     handle = SteamUserStats.DownloadLeaderboardEntries(request.Leaderboard, request.Request, request.Start, request.End);
 
-                _mLeaderboardScoresDownloadedT.Set(handle, (results, error) =>
+                _mLeaderboardScoresDownloadedPool.GetInactiveCallResult().Set(handle, (results, error) =>
                 {
                     request.Callback.Invoke(ProcessScoresDownloaded(results, error, request.MaxDetailsPerEntry), error);
                     _downloadQueue.Dequeue();
@@ -154,7 +182,7 @@ namespace Heathen.SteamworksIntegration.API
 
                 var handle = SteamUserStats.UploadLeaderboardScore(request.Leaderboard, request.Method, request.Score, request.Details, request.Details?.Length ?? 0);
 
-                _mLeaderboardScoreUploadedT.Set(handle, (r, e) =>
+                _mLeaderboardScoreUploadedPool.GetInactiveCallResult().Set(handle, (r, e) =>
                 {
                     OnScoreUploaded?.Invoke(r, e);
                     request.Callback?.Invoke(r, e);
@@ -186,7 +214,7 @@ namespace Heathen.SteamworksIntegration.API
                 else
                     handle = SteamUserStats.FindLeaderboard(request.APIName);
 
-                _mLeaderboardFindResultT.Set(handle, (results, error) =>
+                _mLeaderboardFindResultPool.GetInactiveCallResult().Set(handle, (results, error) =>
                 {
                     var board = new LeaderboardData
                     {
@@ -241,9 +269,6 @@ namespace Heathen.SteamworksIntegration.API
                 if (callback == null)
                     return;
 
-                _mLeaderboardScoresDownloadedT ??= CallResult<LeaderboardScoresDownloaded_t>.Create();
-
-
                 _downloadQueue ??= new Queue<DownloadScoreRequest>();
 
                 var nRequest = new DownloadScoreRequest
@@ -281,8 +306,6 @@ namespace Heathen.SteamworksIntegration.API
             {
                 if (callback == null)
                     return;
-
-                _mLeaderboardScoresDownloadedT ??= CallResult<LeaderboardScoresDownloaded_t>.Create();
 
                 _downloadQueue ??= new Queue<DownloadScoreRequest>();
 
@@ -331,8 +354,6 @@ namespace Heathen.SteamworksIntegration.API
                 if (callback == null)
                     return;
 
-                _mLeaderboardFindResultT ??= CallResult<LeaderboardFindResult_t>.Create();
-
                 _findOrCreateQueue ??= new Queue<FindOrCreateRequest>();
 
                 _findOrCreateQueue.Enqueue(new FindOrCreateRequest
@@ -359,8 +380,6 @@ namespace Heathen.SteamworksIntegration.API
             {
                 if (callback == null)
                     return;
-
-                _mLeaderboardFindResultT ??= CallResult<LeaderboardFindResult_t>.Create();
 
                 if (sortingMethod == ELeaderboardSortMethod.k_ELeaderboardSortMethodNone)
                 {
@@ -430,8 +449,6 @@ namespace Heathen.SteamworksIntegration.API
             public static void UploadScore(LeaderboardData leaderboard, ELeaderboardUploadScoreMethod method, int score,
                 int[] details, Action<LeaderboardScoreUploaded, bool> callback = null)
             {
-                _mLeaderboardScoreUploadedT ??= CallResult<LeaderboardScoreUploaded_t>.Create();
-
                 _uploadQueue ??= new Queue<UploadScoreRequest>();
 
                 var nRequest = new UploadScoreRequest
