@@ -82,8 +82,8 @@ namespace Heathen.SteamworksIntegration
             if (GUILayout.Button("Generate Code", GUILayout.Height(24)))
                 GenerateCode();
 
-            if (_settings.LastGenerated != default)
-                EditorGUILayout.LabelField("Last generated: " + _settings.LastGenerated.ToString("yyyy-MM-dd HH:mm:ss"), EditorStyles.miniLabel);
+            if (!string.IsNullOrEmpty(_settings.LastGenerated))
+                EditorGUILayout.LabelField("Last generated: " + _settings.LastGenerated, EditorStyles.miniLabel);
 
             EditorGUILayout.Space(8);
 
@@ -169,9 +169,8 @@ namespace Heathen.SteamworksIntegration
             int newAppIndex = indices[newDropdownIndex];
             if (newAppIndex != _settings.activeAppIndex)
             {
-                Undo.RecordObject(_settings, "Change Active App");
                 _settings.activeAppIndex = newAppIndex;
-                EditorUtility.SetDirty(_settings);
+                SteamToolsSettings.Save();
 
                 ApplyAppDefine();
 
@@ -225,10 +224,9 @@ namespace Heathen.SteamworksIntegration
             var idStr = EditorGUILayout.TextField("Application ID", app.applicationId.ToString());
             if (uint.TryParse(idStr, out var parsed) && parsed != app.applicationId)
             {
-                Undo.RecordObject(_settings, "Change App ID");
                 app.applicationId = parsed;
                 _settings.isDirty = true;
-                EditorUtility.SetDirty(_settings);
+                SteamToolsSettings.Save();
             }
 
             if (EditorGUILayout.LinkButton("Steamworks Partner Portal"))
@@ -254,10 +252,9 @@ namespace Heathen.SteamworksIntegration
                 EditorGUI.indentLevel++;
                 if (EditorGUILayout.LinkButton("Remove Demo"))
                 {
-                    Undo.RecordObject(_settings, "Remove Demo");
                     _settings.demoAppSettings = null;
                     _settings.isDirty = true;
-                    EditorUtility.SetDirty(_settings);
+                    SteamToolsSettings.Save();
                     EditorGUI.indentLevel--;
                     return;
                 }
@@ -270,10 +267,9 @@ namespace Heathen.SteamworksIntegration
                 EditorGUI.indentLevel++;
                 if (GUILayout.Button("Add Demo App Settings"))
                 {
-                    Undo.RecordObject(_settings, "Add Demo");
                     _settings.demoAppSettings = new SteamToolsSettings.AppSettings { editorName = "Demo" };
                     _settings.isDirty = true;
-                    EditorUtility.SetDirty(_settings);
+                    SteamToolsSettings.Save();
                 }
                 EditorGUI.indentLevel--;
             }
@@ -290,14 +286,13 @@ namespace Heathen.SteamworksIntegration
             _newPlaytestName = EditorGUILayout.TextField("Name", _newPlaytestName);
             if (GUILayout.Button("Add Playtest", GUILayout.Width(100)) && !string.IsNullOrWhiteSpace(_newPlaytestName))
             {
-                Undo.RecordObject(_settings, "Add Playtest");
                 _settings.playtestSettings.Add(new SteamToolsSettings.AppSettings
                 {
                     editorName    = _newPlaytestName,
                     applicationId = 0
                 });
                 _settings.isDirty = true;
-                EditorUtility.SetDirty(_settings);
+                SteamToolsSettings.Save();
                 _newPlaytestName = string.Empty;
                 GUI.FocusControl(null);
             }
@@ -321,10 +316,9 @@ namespace Heathen.SteamworksIntegration
 
             if (toRemove != null)
             {
-                Undo.RecordObject(_settings, "Remove Playtest");
                 _settings.playtestSettings.Remove(toRemove);
                 _settings.isDirty = true;
-                EditorUtility.SetDirty(_settings);
+                SteamToolsSettings.Save();
             }
         }
 
@@ -347,10 +341,9 @@ namespace Heathen.SteamworksIntegration
             GUI.contentColor = new Color(0.4f, 1f, 0.4f);
             if (GUILayout.Button("+ Add", EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
-                Undo.RecordObject(_settings, "Add Achievement");
                 app.achievements.Add("NEW_ACHIEVEMENT");
                 _settings.isDirty = true;
-                EditorUtility.SetDirty(_settings);
+                SteamToolsSettings.Save();
             }
             GUI.contentColor = color;
             EditorGUILayout.EndHorizontal();
@@ -361,18 +354,16 @@ namespace Heathen.SteamworksIntegration
                 var newName = EditorGUILayout.TextField(app.achievements[i]);
                 if (newName != app.achievements[i])
                 {
-                    Undo.RecordObject(_settings, "Rename Achievement");
                     app.achievements[i] = newName;
                     _settings.isDirty = true;
-                    EditorUtility.SetDirty(_settings);
+                    SteamToolsSettings.Save();
                 }
                 GUI.contentColor = new Color(1f, 0.4f, 0.4f);
                 if (GUILayout.Button("X", EditorStyles.toolbarButton, GUILayout.Width(25)))
                 {
-                    Undo.RecordObject(_settings, "Remove Achievement");
                     app.achievements.RemoveAt(i);
                     _settings.isDirty = true;
-                    EditorUtility.SetDirty(_settings);
+                    SteamToolsSettings.Save();
                     GUI.contentColor = color;
                     EditorGUILayout.EndHorizontal();
                     break;
@@ -403,10 +394,9 @@ namespace Heathen.SteamworksIntegration
             GUI.contentColor = new Color(0.4f, 1f, 0.4f);
             if (GUILayout.Button("+ Add", EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
-                Undo.RecordObject(_settings, "Add Stat");
                 app.stats.Add("NewStat");
                 _settings.isDirty = true;
-                EditorUtility.SetDirty(_settings);
+                SteamToolsSettings.Save();
             }
             GUI.contentColor = color;
             EditorGUILayout.EndHorizontal();
@@ -417,18 +407,16 @@ namespace Heathen.SteamworksIntegration
                 var newName = EditorGUILayout.TextField(app.stats[i]);
                 if (newName != app.stats[i])
                 {
-                    Undo.RecordObject(_settings, "Rename Stat");
                     app.stats[i] = newName;
                     _settings.isDirty = true;
-                    EditorUtility.SetDirty(_settings);
+                    SteamToolsSettings.Save();
                 }
                 GUI.contentColor = new Color(1f, 0.4f, 0.4f);
                 if (GUILayout.Button("X", EditorStyles.toolbarButton, GUILayout.Width(25)))
                 {
-                    Undo.RecordObject(_settings, "Remove Stat");
                     app.stats.RemoveAt(i);
                     _settings.isDirty = true;
-                    EditorUtility.SetDirty(_settings);
+                    SteamToolsSettings.Save();
                     GUI.contentColor = color;
                     EditorGUILayout.EndHorizontal();
                     break;
@@ -459,7 +447,6 @@ namespace Heathen.SteamworksIntegration
             GUI.contentColor = new Color(0.4f, 1f, 0.4f);
             if (GUILayout.Button("+ Add", EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
-                Undo.RecordObject(_settings, "Add Leaderboard");
                 app.leaderboards.Add(new SteamToolsSettings.LeaderboardSetting
                 {
                     name            = "New Leaderboard",
@@ -468,7 +455,7 @@ namespace Heathen.SteamworksIntegration
                     createIfNotFound = false
                 });
                 _settings.isDirty = true;
-                EditorUtility.SetDirty(_settings);
+                SteamToolsSettings.Save();
             }
             GUI.contentColor = color;
             EditorGUILayout.EndHorizontal();
@@ -498,39 +485,19 @@ namespace Heathen.SteamworksIntegration
 
                     var newName = EditorGUILayout.TextField("Name", lb.name);
                     if (newName != lb.name)
-                    {
-                        Undo.RecordObject(_settings, "Rename Leaderboard");
-                        lb.name          = newName;
-                        _settings.isDirty = true;
-                        EditorUtility.SetDirty(_settings);
-                    }
+                    { lb.name = newName; _settings.isDirty = true; SteamToolsSettings.Save(); }
 
                     var newSort = (ELeaderboardSortMethod)EditorGUILayout.EnumPopup("Sort Method", lb.sortMethod);
                     if (newSort != lb.sortMethod)
-                    {
-                        Undo.RecordObject(_settings, "Change Leaderboard Sort");
-                        lb.sortMethod    = newSort;
-                        _settings.isDirty = true;
-                        EditorUtility.SetDirty(_settings);
-                    }
+                    { lb.sortMethod = newSort; _settings.isDirty = true; SteamToolsSettings.Save(); }
 
                     var newDisplay = (ELeaderboardDisplayType)EditorGUILayout.EnumPopup("Display Type", lb.displayType);
                     if (newDisplay != lb.displayType)
-                    {
-                        Undo.RecordObject(_settings, "Change Leaderboard Display");
-                        lb.displayType   = newDisplay;
-                        _settings.isDirty = true;
-                        EditorUtility.SetDirty(_settings);
-                    }
+                    { lb.displayType = newDisplay; _settings.isDirty = true; SteamToolsSettings.Save(); }
 
                     var newCreate = EditorGUILayout.Toggle("Create If Not Found", lb.createIfNotFound);
                     if (newCreate != lb.createIfNotFound)
-                    {
-                        Undo.RecordObject(_settings, "Change Leaderboard Create");
-                        lb.createIfNotFound = newCreate;
-                        _settings.isDirty   = true;
-                        EditorUtility.SetDirty(_settings);
-                    }
+                    { lb.createIfNotFound = newCreate; _settings.isDirty = true; SteamToolsSettings.Save(); }
 
                     EditorGUI.indentLevel--;
                 }
@@ -538,10 +505,9 @@ namespace Heathen.SteamworksIntegration
 
             if (lbToRemove != null)
             {
-                Undo.RecordObject(_settings, "Remove Leaderboard");
                 app.leaderboards.Remove(lbToRemove.Value);
                 _settings.isDirty = true;
-                EditorUtility.SetDirty(_settings);
+                SteamToolsSettings.Save();
             }
 
             EditorGUI.indentLevel--;

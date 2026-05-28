@@ -16,14 +16,19 @@
 using Steamworks;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
-    public class SteamToolsSettings : ScriptableObject
+    [Serializable]
+    public class SteamToolsSettings
     {
+        private const string SettingsPath = "Assets/Settings/SteamToolsSettings.json";
+        private static SteamToolsSettings _instance;
+
         [Serializable]
         public struct NameAndID : IEquatable<NameAndID>, IComparable<NameAndID>
         {
@@ -149,29 +154,27 @@ namespace Heathen.SteamworksIntegration
             }
         }
 
-        public DateTime LastGenerated;
-        [HideInInspector] public int          activeAppIndex    = -1;
-        [HideInInspector] public AppSettings  mainAppSettings   = AppSettings.CreateDefault();
-        [HideInInspector] public AppSettings  demoAppSettings;
-        [HideInInspector] public List<string> dlcNames          = new();
-        [HideInInspector] public List<uint>   dlc               = new();
-        [HideInInspector] public SteamGameServerConfiguration defaultServerSettings;
-        [HideInInspector] public List<AppSettings> playtestSettings = new();
+        public string       LastGenerated     = "";
+        public int          activeAppIndex    = -1;
+        public AppSettings  mainAppSettings;
+        public AppSettings  demoAppSettings;
+        public List<string> dlcNames          = new();
+        public List<uint>   dlc               = new();
+        public SteamGameServerConfiguration defaultServerSettings;
+        public List<AppSettings> playtestSettings = new();
 
-        // Inventory items — entered directly (name + definition id) since
-        // InventorySettings runtime management lives in Toolkit.
-        [HideInInspector] public List<NameAndID> inventoryItems = new();
+        public List<NameAndID> inventoryItems = new();
 
         // Flattened unique lists rebuilt by CollectUniqueData().
-        [HideInInspector] public List<uint>      appIds       = new();
-        [HideInInspector] public List<string>    leaderboards = new();
-        [HideInInspector] public List<string>    stats        = new();
-        [HideInInspector] public List<string>    achievements = new();
-        [HideInInspector] public List<string>    inputSets    = new();
-        [HideInInspector] public List<string>    inputLayers  = new();
-        [HideInInspector] public List<string>    inputActions = new();
-        [HideInInspector] public List<NameAndID> items        = new();
-        [HideInInspector] public bool            isDirty      = true;
+        public List<uint>      appIds       = new();
+        public List<string>    leaderboards = new();
+        public List<string>    stats        = new();
+        public List<string>    achievements = new();
+        public List<string>    inputSets    = new();
+        public List<string>    inputLayers  = new();
+        public List<string>    inputActions = new();
+        public List<NameAndID> items        = new();
+        public bool            isDirty      = true;
 
         public AppSettings Get(uint appId)
         {
@@ -182,23 +185,33 @@ namespace Heathen.SteamworksIntegration
 
         public static SteamToolsSettings GetOrCreate()
         {
-            var guids = UnityEditor.AssetDatabase.FindAssets("t:SteamToolsSettings");
-            if (guids != null && guids.Length > 0)
+            if (_instance != null) return _instance;
+
+            if (File.Exists(SettingsPath))
             {
-                var path  = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
-                var found = UnityEditor.AssetDatabase.LoadAssetAtPath<SteamToolsSettings>(path);
-                if (found) return found;
+                try
+                {
+                    _instance = JsonUtility.FromJson<SteamToolsSettings>(File.ReadAllText(SettingsPath));
+                    if (_instance != null)
+                    {
+                        _instance.mainAppSettings ??= AppSettings.CreateDefault();
+                        return _instance;
+                    }
+                }
+                catch { }
             }
 
-            const string defaultPath = "Assets/Settings/SteamToolsSettings.asset";
-            System.IO.Directory.CreateDirectory(
-                System.IO.Path.GetDirectoryName(defaultPath) ?? string.Empty);
+            Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath) ?? string.Empty);
+            _instance = new SteamToolsSettings { mainAppSettings = AppSettings.CreateDefault() };
+            File.WriteAllText(SettingsPath, JsonUtility.ToJson(_instance, true));
+            return _instance;
+        }
 
-            var asset = CreateInstance<SteamToolsSettings>();
-            UnityEditor.AssetDatabase.CreateAsset(asset, defaultPath);
-            UnityEditor.AssetDatabase.SaveAssets();
-            Debug.Log("[SteamToolsSettings] Created new settings asset at " + defaultPath);
-            return asset;
+        public static void Save()
+        {
+            if (_instance == null) return;
+            Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath) ?? string.Empty);
+            File.WriteAllText(SettingsPath, JsonUtility.ToJson(_instance, true));
         }
 
         public void CollectUniqueData()

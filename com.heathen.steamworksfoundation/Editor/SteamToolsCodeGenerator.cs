@@ -61,9 +61,8 @@ namespace Heathen.SteamworksIntegration
             File.WriteAllText(path, BuildCode(settings));
             AssetDatabase.Refresh();
 
-            settings.LastGenerated = DateTime.Now;
-            EditorUtility.SetDirty(settings);
-            AssetDatabase.SaveAssets();
+            settings.LastGenerated = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            SteamToolsSettings.Save();
 
             Debug.Log($"[SteamToolsCodeGenerator] Generated {ScriptName} at {path}");
         }
