@@ -195,6 +195,7 @@ namespace Heathen.SteamworksIntegration
                     if (_instance != null)
                     {
                         _instance.mainAppSettings ??= AppSettings.CreateDefault();
+                        _instance.CollectUniqueData();
                         return _instance;
                     }
                 }
@@ -203,6 +204,7 @@ namespace Heathen.SteamworksIntegration
 
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath) ?? string.Empty);
             _instance = new SteamToolsSettings { mainAppSettings = AppSettings.CreateDefault() };
+            _instance.CollectUniqueData();
             File.WriteAllText(SettingsPath, JsonUtility.ToJson(_instance, true));
             return _instance;
         }
@@ -210,6 +212,7 @@ namespace Heathen.SteamworksIntegration
         public static void Save()
         {
             if (_instance == null) return;
+            _instance.CollectUniqueData();
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath) ?? string.Empty);
             File.WriteAllText(SettingsPath, JsonUtility.ToJson(_instance, true));
         }
