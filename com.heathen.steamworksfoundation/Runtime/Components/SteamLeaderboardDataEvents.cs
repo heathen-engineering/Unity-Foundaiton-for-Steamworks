@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if !DISABLESTEAMWORKS && STEAM_INSTALLED && !HEATHEN_TOOLKIT_INSTALLED
+#if !DISABLESTEAMWORKS && STEAM_INSTALLED
 using UnityEngine;
 using UnityEngine.Events;
 

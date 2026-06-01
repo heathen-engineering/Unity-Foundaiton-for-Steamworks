@@ -35,17 +35,19 @@ namespace Heathen.SteamworksIntegration
         public UnityUserAndPointerDataEvent onClick;
 
         private SteamUserData _mInspector;
+        private UnityAction<UserData, EPersonaChange> _onChangedDelegate;
 
         private void Awake()
         {
             _mInspector = GetComponent<SteamUserData>();
-            _mInspector.onChanged?.AddListener(onChange.Invoke);
+            _onChangedDelegate = onChange.Invoke;
+            _mInspector.onChanged?.AddListener(_onChangedDelegate);
         }
 
         private void OnDestroy()
         {
             if (_mInspector != null)
-                _mInspector.onChanged?.RemoveListener(onChange.Invoke);
+                _mInspector.onChanged?.RemoveListener(_onChangedDelegate);
         }
 
         /// <summary>

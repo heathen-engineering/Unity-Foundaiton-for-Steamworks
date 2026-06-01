@@ -57,15 +57,15 @@ namespace Heathen.SteamworksIntegration.API
                 _onUserAchievementStored = new();
                 _onAchievementStatusChanged = new();
 
-                _userStatsReceivedT = null;
-                _userStatsUnloadedT = null;
-                _userStatsStoredT = null;
-                _userAchievementStoredT = null;
-                _userAchievementIconFetchedT = null;
-                _numberOfCurrentPlayersT = null;
-                _globalAchievementPercentagesReadyT = null;
-                _globalStatsReceivedT = null;
-                _userStatsReceivedT2 = null;
+                _userStatsReceivedT?.Dispose();              _userStatsReceivedT = null;
+                _userStatsUnloadedT?.Dispose();              _userStatsUnloadedT = null;
+                _userStatsStoredT?.Dispose();                _userStatsStoredT = null;
+                _userAchievementStoredT?.Dispose();          _userAchievementStoredT = null;
+                _userAchievementIconFetchedT?.Dispose();     _userAchievementIconFetchedT = null;
+                _numberOfCurrentPlayersT?.Dispose();         _numberOfCurrentPlayersT = null;
+                _globalAchievementPercentagesReadyT?.Dispose(); _globalAchievementPercentagesReadyT = null;
+                _globalStatsReceivedT?.Dispose();            _globalStatsReceivedT = null;
+                _userStatsReceivedT2?.Dispose();             _userStatsReceivedT2 = null;
             }
 
             private class ImageRequestCallbackLink

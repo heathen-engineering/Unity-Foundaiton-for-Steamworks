@@ -60,6 +60,13 @@ namespace Heathen.SteamworksIntegration.API
             public Action<LeaderboardData, bool> Callback;
         }
 
+        private struct UgcDownloadRequest
+        {
+            public UGCHandle_t Handle;
+            public uint Priority;
+            public Action<RemoteStorageDownloadUGCResult_t, bool> Callback;
+        }
+
         /// <summary>
         /// A static class providing client-side utilities for interacting with leaderboards in the Heathen Steamworks Integration framework.
         /// </summary>
@@ -76,12 +83,15 @@ namespace Heathen.SteamworksIntegration.API
                 _mLeaderboardScoresDownloadedT = null;
                 _mLeaderboardFindResultT = null;
                 _mLeaderboardScoreUploadedT = null;
+                _mUgcDownloadT = null;
                 _downloadQueue = null;
                 _uploadQueue = null;
                 _findOrCreateQueue = null;
+                _ugcDownloadQueue = null;
                 _downloadWorking = false;
                 _uploadWorking = false;
                 _findOrCreateWorking = false;
+                _ugcDownloadWorking = false;
 
                 OnScoreUploaded = new();
             }
@@ -98,14 +108,17 @@ namespace Heathen.SteamworksIntegration.API
             private static CallResult<LeaderboardScoresDownloaded_t> _mLeaderboardScoresDownloadedT;
             private static CallResult<LeaderboardFindResult_t> _mLeaderboardFindResultT;
             private static CallResult<LeaderboardScoreUploaded_t> _mLeaderboardScoreUploadedT;
+            private static CallResult<RemoteStorageDownloadUGCResult_t> _mUgcDownloadT;
 
             private static Queue<DownloadScoreRequest> _downloadQueue;
             private static Queue<UploadScoreRequest> _uploadQueue;
             private static Queue<FindOrCreateRequest> _findOrCreateQueue;
+            private static Queue<UgcDownloadRequest> _ugcDownloadQueue;
 
             private static bool _downloadWorking;
             private static bool _uploadWorking;
             private static bool _findOrCreateWorking;
+            private static bool _ugcDownloadWorking;
 
             // Queue processing is driven by App.CallbackWaitThread_ProgressChanged which calls
             // ProcessPendingRequests() AFTER SteamAPI.RunCallbacks() completes each tick.
@@ -119,6 +132,7 @@ namespace Heathen.SteamworksIntegration.API
                 ExecuteDownloadRequest();
                 ExecuteUploadRequest();
                 ExecuteFindOrCreateRequest();
+                ExecuteUgcDownloadRequest();
             }
 
             private static void ExecuteDownloadRequest()
@@ -207,6 +221,31 @@ namespace Heathen.SteamworksIntegration.API
                 });
             }
             
+            internal static void DownloadEntryUgc(UGCHandle_t handle, uint priority, Action<RemoteStorageDownloadUGCResult_t, bool> callback)
+            {
+                _mUgcDownloadT ??= CallResult<RemoteStorageDownloadUGCResult_t>.Create();
+                _ugcDownloadQueue ??= new Queue<UgcDownloadRequest>();
+                _ugcDownloadQueue.Enqueue(new UgcDownloadRequest { Handle = handle, Priority = priority, Callback = callback });
+                if (!_ugcDownloadWorking)
+                    ExecuteUgcDownloadRequest();
+            }
+
+            private static void ExecuteUgcDownloadRequest()
+            {
+                if (_ugcDownloadWorking || _ugcDownloadQueue == null || _ugcDownloadQueue.Count == 0)
+                    return;
+
+                _ugcDownloadWorking = true;
+                var request = _ugcDownloadQueue.Peek();
+                var call = SteamRemoteStorage.UGCDownload(request.Handle, request.Priority);
+                _mUgcDownloadT.Set(call, (result, error) =>
+                {
+                    request.Callback?.Invoke(result, error);
+                    _ugcDownloadQueue.Dequeue();
+                    _ugcDownloadWorking = false;
+                });
+            }
+
             /// <summary>
             /// The number of pending requests to download scores from a leaderboard
             /// </summary>

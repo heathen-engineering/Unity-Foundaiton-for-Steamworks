@@ -14,8 +14,6 @@
 #if !DISABLESTEAMWORKS  && STEAM_INSTALLED
 using Steamworks;
 using System;
-using System.ComponentModel;
-using System.Threading;
 using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
@@ -174,82 +172,31 @@ namespace Heathen.SteamworksIntegration
                 return;
             }
 
-            var boards = new LeaderboardData[commands.Length];
-
-            try
-            {
-                var bgWorker = new BackgroundWorker();
-                bgWorker.DoWork += BgWorker_DoWork;
-                bgWorker.RunWorkerCompleted += (_, arguments) =>
-                {
-                    if (arguments.Cancelled)
-                        callback?.Invoke(null, EResult.k_EResultCancelled);
-                    else if (arguments.Error != null)
-                        callback?.Invoke(null, EResult.k_EResultUnexpectedError);
-                    else
-                    {
-                        if (arguments.Result is LeaderboardData[] results)
-                            for (int i = 0; i < results.Length; i++)
-                            {
-                                boards[i] = results[i];
-                            }
-
-                        callback?.Invoke(boards, EResult.k_EResultOK);
-                    }
-
-                    bgWorker.Dispose();
-                };
-                bgWorker.RunWorkerAsync(commands);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Get All Leaderboards experienced and unhandled exception: " + ex);
-                callback?.Invoke(null, EResult.k_EResultUnexpectedError);
-            }
+            var results = new LeaderboardData[commands.Length];
+            ProcessGetAllAt(commands, results, 0, callback);
         }
 
-        private static void BgWorker_DoWork(object sender, DoWorkEventArgs e)
+        private static void ProcessGetAllAt(GetAllRequest[] commands, LeaderboardData[] results, int index, Action<LeaderboardData[], EResult> callback)
         {
-            if (e.Argument is not GetAllRequest[] boards) return;
-            var results = new LeaderboardData[boards.Length];
-
-            for (var i = 0; i < boards.Length; i++)
+            if (index >= commands.Length)
             {
-                try
-                {
-                    var board = boards[i];
-                    var waiting = true;
-                    if (board.create)
-                    {
-                        var i1 = i;
-                        GetOrCreate(board.name, board.type, board.sort, (result, _) =>
-                        {
-                            results[i1] = result;
-                            waiting = false;
-                        });
-                    }
-                    else
-                    {
-                        var i1 = i;
-                        Get(board.name, (result, _) =>
-                        {
-                            results[i1] = result;
-                            waiting = false;
-                        });
-                    }
-
-                    while (waiting)
-                    {
-                        Thread.Sleep(10);
-                    }
-                }
-                catch
-                {
-                    results[i] = default;
-                }
+                callback?.Invoke(results, EResult.k_EResultOK);
+                return;
             }
 
-            e.Result = results;
+            var cmd = commands[index];
+            if (cmd.create)
+                GetOrCreate(cmd.name, cmd.type, cmd.sort, (result, _) =>
+                {
+                    results[index] = result;
+                    ProcessGetAllAt(commands, results, index + 1, callback);
+                });
+            else
+                Get(cmd.name, (result, _) =>
+                {
+                    results[index] = result;
+                    ProcessGetAllAt(commands, results, index + 1, callback);
+                });
         }
 
         /// <summary>
@@ -377,7 +324,7 @@ namespace Heathen.SteamworksIntegration
 
         public readonly override int GetHashCode()
         {
-            return id.GetHashCode() + apiName.GetHashCode();
+            return id.GetHashCode() ^ (apiName?.GetHashCode() ?? 0);
         }
 
         public readonly override bool Equals(object obj)
@@ -419,7 +366,17 @@ namespace Heathen.SteamworksIntegration
         public static implicit operator ulong(LeaderboardData c) => c.id.m_SteamLeaderboard;
         public static implicit operator LeaderboardData(ulong id) => new LeaderboardData { id = new SteamLeaderboard_t(id), apiName = API.Leaderboards.Client.GetName(new SteamLeaderboard_t(id)) };
         public static implicit operator SteamLeaderboard_t(LeaderboardData c) => c.id;
-        public static implicit operator LeaderboardData(SteamLeaderboard_t id) => new LeaderboardData { id = id };
+        public static implicit operator LeaderboardData(SteamLeaderboard_t id)
+        {
+            var name = SteamUserStats.GetLeaderboardName(id);
+            if (!string.IsNullOrEmpty(name))
+            {
+                var known = SteamTools.Interface.GetBoard(name);
+                if (known.IsValid) return known;
+            }
+            Debug.LogWarning($"SteamLeaderboard_t ({id.m_SteamLeaderboard}) is not a known managed board and may not function correctly. Leaderboards should be found or created via SteamTools.Game.");
+            return default;
+        }
         public static implicit operator string(LeaderboardData c) => c.apiName;
         #endregion
     }

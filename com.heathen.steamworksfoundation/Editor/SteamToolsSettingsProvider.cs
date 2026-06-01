@@ -225,7 +225,6 @@ namespace Heathen.SteamworksIntegration
             if (uint.TryParse(idStr, out var parsed) && parsed != app.applicationId)
             {
                 app.applicationId = parsed;
-                _settings.isDirty = true;
                 SteamToolsSettings.Save();
             }
 
@@ -253,8 +252,7 @@ namespace Heathen.SteamworksIntegration
                 if (EditorGUILayout.LinkButton("Remove Demo"))
                 {
                     _settings.demoAppSettings = null;
-                    _settings.isDirty = true;
-                    SteamToolsSettings.Save();
+                        SteamToolsSettings.Save();
                     EditorGUI.indentLevel--;
                     return;
                 }
@@ -268,8 +266,7 @@ namespace Heathen.SteamworksIntegration
                 if (GUILayout.Button("Add Demo App Settings"))
                 {
                     _settings.demoAppSettings = new SteamToolsSettings.AppSettings { editorName = "Demo" };
-                    _settings.isDirty = true;
-                    SteamToolsSettings.Save();
+                        SteamToolsSettings.Save();
                 }
                 EditorGUI.indentLevel--;
             }
@@ -291,7 +288,6 @@ namespace Heathen.SteamworksIntegration
                     editorName    = _newPlaytestName,
                     applicationId = 0
                 });
-                _settings.isDirty = true;
                 SteamToolsSettings.Save();
                 _newPlaytestName = string.Empty;
                 GUI.FocusControl(null);
@@ -317,7 +313,6 @@ namespace Heathen.SteamworksIntegration
             if (toRemove != null)
             {
                 _settings.playtestSettings.Remove(toRemove);
-                _settings.isDirty = true;
                 SteamToolsSettings.Save();
             }
         }
@@ -342,7 +337,6 @@ namespace Heathen.SteamworksIntegration
             if (GUILayout.Button("+ Add", EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
                 app.achievements.Add("NEW_ACHIEVEMENT");
-                _settings.isDirty = true;
                 SteamToolsSettings.Save();
             }
             GUI.contentColor = color;
@@ -355,15 +349,13 @@ namespace Heathen.SteamworksIntegration
                 if (newName != app.achievements[i])
                 {
                     app.achievements[i] = newName;
-                    _settings.isDirty = true;
-                    SteamToolsSettings.Save();
+                        SteamToolsSettings.Save();
                 }
                 GUI.contentColor = new Color(1f, 0.4f, 0.4f);
                 if (GUILayout.Button("X", EditorStyles.toolbarButton, GUILayout.Width(25)))
                 {
                     app.achievements.RemoveAt(i);
-                    _settings.isDirty = true;
-                    SteamToolsSettings.Save();
+                        SteamToolsSettings.Save();
                     GUI.contentColor = color;
                     EditorGUILayout.EndHorizontal();
                     break;
@@ -395,7 +387,6 @@ namespace Heathen.SteamworksIntegration
             if (GUILayout.Button("+ Add", EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
                 app.stats.Add("NewStat");
-                _settings.isDirty = true;
                 SteamToolsSettings.Save();
             }
             GUI.contentColor = color;
@@ -408,15 +399,13 @@ namespace Heathen.SteamworksIntegration
                 if (newName != app.stats[i])
                 {
                     app.stats[i] = newName;
-                    _settings.isDirty = true;
-                    SteamToolsSettings.Save();
+                        SteamToolsSettings.Save();
                 }
                 GUI.contentColor = new Color(1f, 0.4f, 0.4f);
                 if (GUILayout.Button("X", EditorStyles.toolbarButton, GUILayout.Width(25)))
                 {
                     app.stats.RemoveAt(i);
-                    _settings.isDirty = true;
-                    SteamToolsSettings.Save();
+                        SteamToolsSettings.Save();
                     GUI.contentColor = color;
                     EditorGUILayout.EndHorizontal();
                     break;
@@ -454,7 +443,6 @@ namespace Heathen.SteamworksIntegration
                     displayType     = ELeaderboardDisplayType.k_ELeaderboardDisplayTypeNumeric,
                     createIfNotFound = false
                 });
-                _settings.isDirty = true;
                 SteamToolsSettings.Save();
             }
             GUI.contentColor = color;
@@ -485,19 +473,19 @@ namespace Heathen.SteamworksIntegration
 
                     var newName = EditorGUILayout.TextField("Name", lb.name);
                     if (newName != lb.name)
-                    { lb.name = newName; _settings.isDirty = true; SteamToolsSettings.Save(); }
+                    { lb.name = newName; app.leaderboards[i] = lb; SteamToolsSettings.Save(); }
 
                     var newSort = (ELeaderboardSortMethod)EditorGUILayout.EnumPopup("Sort Method", lb.sortMethod);
                     if (newSort != lb.sortMethod)
-                    { lb.sortMethod = newSort; _settings.isDirty = true; SteamToolsSettings.Save(); }
+                    { lb.sortMethod = newSort; app.leaderboards[i] = lb; SteamToolsSettings.Save(); }
 
                     var newDisplay = (ELeaderboardDisplayType)EditorGUILayout.EnumPopup("Display Type", lb.displayType);
                     if (newDisplay != lb.displayType)
-                    { lb.displayType = newDisplay; _settings.isDirty = true; SteamToolsSettings.Save(); }
+                    { lb.displayType = newDisplay; app.leaderboards[i] = lb; SteamToolsSettings.Save(); }
 
                     var newCreate = EditorGUILayout.Toggle("Create If Not Found", lb.createIfNotFound);
                     if (newCreate != lb.createIfNotFound)
-                    { lb.createIfNotFound = newCreate; _settings.isDirty = true; SteamToolsSettings.Save(); }
+                    { lb.createIfNotFound = newCreate; app.leaderboards[i] = lb; SteamToolsSettings.Save(); }
 
                     EditorGUI.indentLevel--;
                 }
@@ -506,7 +494,6 @@ namespace Heathen.SteamworksIntegration
             if (lbToRemove != null)
             {
                 app.leaderboards.Remove(lbToRemove.Value);
-                _settings.isDirty = true;
                 SteamToolsSettings.Save();
             }
 

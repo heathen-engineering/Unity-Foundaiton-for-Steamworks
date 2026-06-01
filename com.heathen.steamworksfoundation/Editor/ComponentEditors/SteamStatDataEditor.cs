@@ -32,6 +32,7 @@ namespace Heathen.SteamworksIntegration
         {
             typeof(SteamStatIntDisplay),
             typeof(SteamStatFloatDisplay),
+            typeof(SteamStatDataEvents),
         };
 
         private void OnEnable()

@@ -66,12 +66,15 @@ namespace Heathen.SteamworksIntegration
 
         private void Start()
         {
-            _events = GetComponent<ISteamLeaderboardDataEvents>();
-
             if (SteamTools.Interface.IsReady)
                 ResolveBoard();
             else
                 SteamTools.Interface.OnReady += OnInterfaceReady;
+        }
+
+        private void OnDestroy()
+        {
+            SteamTools.Interface.OnReady -= OnInterfaceReady;
         }
 
         private void OnInterfaceReady()

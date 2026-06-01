@@ -398,10 +398,10 @@ namespace Heathen.SteamworksIntegration
             return id.m_SteamID.Equals(other);
         }
 
-        public readonly override bool Equals(object obj)
-        {
-            return id.m_SteamID.Equals(obj);
-        }
+        public readonly override bool Equals(object obj) =>
+            obj is UserData ud  ? Equals(ud)  :
+            obj is CSteamID cid ? Equals(cid) :
+            obj is ulong ul     ? Equals(ul)  : false;
 
         public readonly override int GetHashCode()
         {

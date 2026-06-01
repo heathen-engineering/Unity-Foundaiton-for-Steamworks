@@ -356,7 +356,7 @@ namespace Heathen.SteamworksIntegration
             var soEvents = new SerializedObject(evtComp);
 
             var parentSo = serializedObject;
-            var delegatesProp = parentSo.FindProperty("mDelegates");
+            var delegatesProp = parentSo.FindProperty(SteamTools.Interface.ModularDelegatesField);
             if (delegatesProp == null)
             {
                 return;
@@ -511,7 +511,7 @@ namespace Heathen.SteamworksIntegration
                 case SerializedPropertyType.Vector2: targetProperty.vector2Value = (Vector2)value; break;
                 case SerializedPropertyType.Vector3: targetProperty.vector3Value = (Vector3)value; break;
                 default:
-                    EditorUtility.CopySerializedIfDifferent(targetProperty.serializedObject.targetObject, targetProperty.serializedObject.targetObject);
+                    Debug.LogWarning($"ModularEditor.SetSerializedValue: unhandled property type {targetProperty.propertyType} on {targetProperty.propertyPath}");
                     break;
             }
         }
@@ -598,7 +598,7 @@ namespace Heathen.SteamworksIntegration
                 case SerializedPropertyType.Vector2: targetProperty.vector2Value = source.vector2Value; break;
                 case SerializedPropertyType.Vector3: targetProperty.vector3Value = source.vector3Value; break;
                 default:
-                    EditorUtility.CopySerializedIfDifferent(source.serializedObject.targetObject, targetProperty.serializedObject.targetObject);
+                    targetProperty.boxedValue = source.boxedValue;
                     break;
             }
         }

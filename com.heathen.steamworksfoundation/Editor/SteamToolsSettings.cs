@@ -174,7 +174,6 @@ namespace Heathen.SteamworksIntegration
         public List<string>    inputLayers  = new();
         public List<string>    inputActions = new();
         public List<NameAndID> items        = new();
-        public bool            isDirty      = true;
 
         public AppSettings Get(uint appId)
         {
@@ -273,8 +272,6 @@ namespace Heathen.SteamworksIntegration
             inputActions.Sort();
             dlcNames.Sort();
             items.Sort();
-
-            isDirty = true;
         }
 
         public static string MakeValidIdentifier(string name)

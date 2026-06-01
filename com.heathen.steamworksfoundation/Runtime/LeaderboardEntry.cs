@@ -32,8 +32,8 @@ namespace Heathen.SteamworksIntegration
         public int this[int index] => Details[index];
 
         /// <summary>Cached file name from the last successful UGC download.</summary>
-        public string CashedUgcFileName = string.Empty;
-        public bool   HasCashedUgcFileName => !string.IsNullOrEmpty(CashedUgcFileName);
+        public string CachedUgcFileName = string.Empty;
+        public bool   HasCachedUgcFileName => !string.IsNullOrEmpty(CachedUgcFileName);
 
         /// <summary>Invoked when a UGC download completes, providing the file name (or null on failure).</summary>
         public UnityEvent<string> EvtUgcDownloaded = new();
@@ -51,27 +51,23 @@ namespace Heathen.SteamworksIntegration
                 return;
             }
 
-            var call = SteamRemoteStorage.UGCDownload(UgcHandle, 0);
-            var callResult = CallResult<RemoteStorageDownloadUGCResult_t>.Create();
-            callResult.Set(call, (result, bIOFailure) =>
+            API.Leaderboards.Client.DownloadEntryUgc(UgcHandle, 0, (result, bIOFailure) =>
             {
                 if (!bIOFailure && result.m_eResult == EResult.k_EResultOK)
                 {
-                    CashedUgcFileName = result.m_pchFileName;
+                    CachedUgcFileName = result.m_pchFileName;
                     EvtUgcDownloaded.Invoke(result.m_pchFileName);
 
                     if (callback != null)
                     {
-                        var bufferSize = result.m_nSizeInBytes;
-                        var buffer = new byte[bufferSize];
-                        SteamRemoteStorage.UGCRead(result.m_hFile, buffer, bufferSize, 0, EUGCReadAction.k_EUGCRead_ContinueReadingUntilFinished);
-                        var jsonString = System.Text.Encoding.UTF8.GetString(buffer);
-                        callback.Invoke(JsonUtility.FromJson<T>(jsonString), false);
+                        var buffer = new byte[result.m_nSizeInBytes];
+                        SteamRemoteStorage.UGCRead(result.m_hFile, buffer, result.m_nSizeInBytes, 0, EUGCReadAction.k_EUGCRead_ContinueReadingUntilFinished);
+                        callback.Invoke(JsonUtility.FromJson<T>(System.Text.Encoding.UTF8.GetString(buffer)), false);
                     }
                 }
                 else
                 {
-                    CashedUgcFileName = string.Empty;
+                    CachedUgcFileName = string.Empty;
                     EvtUgcDownloaded.Invoke(null);
                     callback?.Invoke(default, true);
                 }
@@ -84,15 +80,12 @@ namespace Heathen.SteamworksIntegration
         /// </summary>
         /// <param name="priority">Download priority hint passed to Steam.</param>
         /// <returns>True if a download was started; false if the handle is invalid.</returns>
-        public bool StartUgcDownload(uint priority = 0)
+        public void StartUgcDownload(uint priority = 0)
         {
             if (UgcHandle == UGCHandle_t.Invalid)
-                return false;
+                return;
 
-            var call = SteamRemoteStorage.UGCDownload(UgcHandle, priority);
-            var callResult = CallResult<RemoteStorageDownloadUGCResult_t>.Create();
-            callResult.Set(call, HandleUgcDownloadResult);
-            return true;
+            API.Leaderboards.Client.DownloadEntryUgc(UgcHandle, priority, HandleUgcDownloadResult);
         }
 
         /// <summary>
@@ -101,39 +94,35 @@ namespace Heathen.SteamworksIntegration
         /// </summary>
         /// <param name="priority">Download priority hint.</param>
         /// <param name="callback">Receives the raw result and an IO-failure flag.</param>
-        /// <returns>True if a download was started; false if the handle is invalid.</returns>
-        public bool StartUgcDownload(uint priority, Action<RemoteStorageDownloadUGCResult_t, bool> callback)
+        public void StartUgcDownload(uint priority, Action<RemoteStorageDownloadUGCResult_t, bool> callback)
         {
             if (UgcHandle == UGCHandle_t.Invalid)
-                return false;
+                return;
 
-            var call = SteamRemoteStorage.UGCDownload(UgcHandle, priority);
-            var callResult = CallResult<RemoteStorageDownloadUGCResult_t>.Create();
-            callResult.Set(call, (p, e) =>
+            API.Leaderboards.Client.DownloadEntryUgc(UgcHandle, priority, (p, e) =>
             {
                 HandleUgcDownloadResult(p, e);
                 callback?.Invoke(p, e);
             });
-            return true;
         }
 
         /// <summary>Returns the download progress as a 0–1 fraction.</summary>
         public float UgcDownloadProgress()
         {
             SteamRemoteStorage.GetUGCDownloadProgress(UgcHandle, out int downloaded, out int expected);
-            return downloaded / (float)expected;
+            return expected == 0 ? 0f : downloaded / (float)expected;
         }
 
         private void HandleUgcDownloadResult(RemoteStorageDownloadUGCResult_t param, bool bIOFailure)
         {
             if (!bIOFailure && param.m_eResult == EResult.k_EResultOK)
             {
-                CashedUgcFileName = param.m_pchFileName;
+                CachedUgcFileName = param.m_pchFileName;
                 EvtUgcDownloaded.Invoke(param.m_pchFileName);
             }
             else
             {
-                CashedUgcFileName = string.Empty;
+                CachedUgcFileName = string.Empty;
                 EvtUgcDownloaded.Invoke(null);
             }
         }

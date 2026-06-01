@@ -137,10 +137,12 @@ namespace Heathen.SteamworksIntegration
             return AppId.Equals(new CGameID(other).AppID());
         }
 
-        public readonly override bool Equals(object obj)
-        {
-            return AppId.m_AppId.Equals(obj);
-        }
+        public readonly override bool Equals(object obj) =>
+            obj is AppData ad   ? Equals(ad)  :
+            obj is AppId_t aid  ? Equals(aid) :
+            obj is uint u       ? Equals(u)   :
+            obj is CGameID gid  ? Equals(gid) :
+            obj is ulong ul     ? Equals(ul)  : false;
 
         public readonly override int GetHashCode()
         {

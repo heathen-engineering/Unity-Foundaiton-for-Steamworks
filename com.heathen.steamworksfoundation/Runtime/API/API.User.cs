@@ -81,11 +81,9 @@ namespace Heathen.SteamworksIntegration.API
                 }
                 set
                 {
+                    SteamFriends.ClearRichPresence();
                     foreach(var entry in value)
-                    {
-                        SteamFriends.ClearRichPresence();
                         SteamFriends.SetRichPresence(entry.key, entry.value);
-                    }
                 }
             }
 

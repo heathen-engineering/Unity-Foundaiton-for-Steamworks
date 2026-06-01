@@ -19,7 +19,6 @@ using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 #if UNITASK_INSTALLED
 using Cysharp.Threading.Tasks;
 #endif
@@ -110,7 +109,7 @@ namespace SteamTools
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Init()
         {
-            _initalised     = false;
+            _initialised     = false;
             IsReady         = false;
             _boards         = new();
             _sets           = new();
@@ -118,7 +117,7 @@ namespace SteamTools
             _whenReadyCalls = new();
         }
 
-        private static bool _initalised;
+        private static bool _initialised;
 
         /// <summary>
         /// A property indicating whether the Steam integration has been successfully initialised.
@@ -160,9 +159,9 @@ namespace SteamTools
         /// </summary>
         public static void Initialise()
         {
-            if (_initalised) return;
+            if (_initialised) return;
 
-            _initalised = true;
+            _initialised = true;
 
             Events.Initialise();
             Events.OnSteamInitialisationError += HandleInitialisedError;
@@ -193,8 +192,8 @@ namespace SteamTools
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error reflecting Game.AppId: {e.Message}");
-                OnInitialisationError?.Invoke($"Error reflecting Game.AppId: {e.Message}");
+                Debug.LogError($"Error invoking SteamTools.Game.Initialise: {e.Message}");
+                OnInitialisationError?.Invoke($"Error invoking SteamTools.Game.Initialise: {e.Message}");
             }
         }
 
@@ -227,6 +226,7 @@ namespace SteamTools
                                         Dictionary<string, InputActionSetData> setMap,
                                         Dictionary<string, InputActionData> actionMap)
         {
+            if (IsReady) return;
             _boards  = boardMap;
             _sets    = setMap;
             _actions = actionMap;
@@ -245,6 +245,9 @@ namespace SteamTools
             }
             _whenReadyCalls.Clear();
         }
+
+        /// <summary>The serialised field name used by the modular editor system to track active event delegates on parent components.</summary>
+        public const string ModularDelegatesField = "mDelegates";
 
         /// <summary>
         /// Adds a new leaderboard to the internal collection.
@@ -646,30 +649,30 @@ namespace SteamTools
         /// A predefined colour value representing the signature blue often associated with Steam branding.
         /// The RGBA value is approximately (0.2, 0.6, 0.93, 1).
         /// </summary>
-        public static Color SteamBlue = new(0.2f, 0.60f, 0.93f, 1f);
+        public static readonly Color SteamBlue = new(0.2f, 0.60f, 0.93f, 1f);
 
         /// <summary>
         /// A predefined colour value representing a green shade often associated with Steam branding.
         /// The RGBA value is approximately (0.2, 0.42, 0.2, 1).
         /// </summary>
-        public static Color SteamGreen = new(0.2f, 0.42f, 0.2f, 1f);
+        public static readonly Color SteamGreen = new(0.2f, 0.42f, 0.2f, 1f);
 
         /// <summary>
         /// A predefined colour representing a bright green shade with RGBA values (0.4, 0.84, 0.4, 1.0).
         /// </summary>
-        public static Color BrightGreen = new(0.4f, 0.84f, 0.4f, 1f);
+        public static readonly Color BrightGreen = new(0.4f, 0.84f, 0.4f, 1f);
 
         /// <summary>
         /// A predefined colour value representing a semi-transparent white with 50% opacity.
         /// The RGBA value is (1, 1, 1, 0.5).
         /// </summary>
-        public static Color HalfAlpha = new(1f, 1f, 1f, 0.5f);
+        public static readonly Color HalfAlpha = new(1f, 1f, 1f, 0.5f);
 
         /// <summary>
         /// Represents a colour indicating errors or warnings in the user interface.
         /// RGBA values (1, 0.5, 0.5, 1).
         /// </summary>
-        public static Color ErrorRed = new(1, 0.5f, 0.5f, 1);
+        public static readonly Color ErrorRed = new(1, 0.5f, 0.5f, 1);
     }
 }
 #endif

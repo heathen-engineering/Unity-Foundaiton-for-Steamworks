@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #if !DISABLESTEAMWORKS && STEAM_INSTALLED
-//#define UNITY_SERVER
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -166,7 +165,7 @@ namespace Heathen.SteamworksIntegration.API
         public static bool IsDebugging = false;
 
         private static BackgroundWorker _callbackWaitThread;
-        private static bool _suspendCallbacks;
+        private static volatile bool _suspendCallbacks;
 
         private static void CallbackWaitThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {

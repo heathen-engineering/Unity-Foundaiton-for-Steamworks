@@ -231,10 +231,10 @@ namespace Heathen.SteamworksIntegration
             return _id.Equals(other);
         }
 
-        public override bool Equals(object obj)
-        {
-            return _id.Equals(obj);
-        }
+        public override bool Equals(object obj) =>
+            obj is LobbyData ld ? Equals(ld)  :
+            obj is CSteamID cid ? Equals(cid) :
+            obj is ulong ul     ? Equals(ul)  : false;
 
         public override int GetHashCode()
         {

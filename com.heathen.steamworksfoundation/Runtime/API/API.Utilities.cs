@@ -107,7 +107,7 @@ namespace Heathen.SteamworksIntegration.API
         {
             if(input.Contains(openPattern) && input.Contains(closePattern))
             {
-                var lastOpenIndex = input.LastIndexOf(closePattern, StringComparison.Ordinal);
+                var lastOpenIndex = input.LastIndexOf(openPattern, StringComparison.Ordinal);
                 var afterLastCloseIndex = input.IndexOf(closePattern, lastOpenIndex, StringComparison.Ordinal);
                 if (afterLastCloseIndex != -1)
                 {

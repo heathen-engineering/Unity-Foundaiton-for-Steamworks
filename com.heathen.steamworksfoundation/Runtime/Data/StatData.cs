@@ -176,10 +176,9 @@ namespace Heathen.SteamworksIntegration
             return id.Equals(other.id);
         }
         /// <inheritdoc/>
-        public readonly override bool Equals(object obj)
-        {
-            return id.Equals(obj);
-        }
+        public readonly override bool Equals(object obj) =>
+            obj is StatData sd ? Equals(sd) :
+            obj is string s    ? Equals(s)  : false;
         /// <inheritdoc/>
         public readonly override int GetHashCode()
         {

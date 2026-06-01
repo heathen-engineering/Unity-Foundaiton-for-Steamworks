@@ -160,6 +160,17 @@ namespace Heathen.SteamworksIntegration
         }
     }
 
+    [CustomEditor(typeof(SteamStatDataEvents), true)]
+    public class SteamStatDataEventsEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+            DrawPropertiesExcluding(serializedObject, "m_Script");
+            serializedObject.ApplyModifiedProperties();
+        }
+    }
+
     // ---- Leaderboard child components ---------------------------------------------------
 
     // SteamLeaderboardDataEvents: Foundation's version (no UGC) is guarded when Toolkit is
