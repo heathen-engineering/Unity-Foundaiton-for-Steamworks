@@ -18,12 +18,17 @@ using UnityEngine.UI;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Displays the icon for a Steam achievement in a RawImage, updating when the status changes.</summary>
+    /// <summary>
+    /// Displays the icon for a Steam achievement in a RawImage, updating when the status changes.
+    /// </summary>
     [ModularComponent(typeof(SteamAchievementData), "Icons", nameof(image))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamAchievementData))]
     public class SteamAchievementIcon : MonoBehaviour
     {
+        /// <summary>
+        /// The RawImage component to display the achievement icon in.
+        /// </summary>
         public RawImage image;
 
         private SteamAchievementData _mData;
@@ -50,6 +55,9 @@ namespace Heathen.SteamworksIntegration
                 Refresh();
         }
 
+        /// <summary>
+        /// Refreshes the achievement icon.
+        /// </summary>
         public void Refresh()
         {
             if (image != null && !string.IsNullOrEmpty(_mData.apiName))

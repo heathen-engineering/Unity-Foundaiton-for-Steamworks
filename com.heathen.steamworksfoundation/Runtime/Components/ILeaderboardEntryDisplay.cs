@@ -21,6 +21,9 @@ namespace Heathen.SteamworksIntegration
     /// </summary>
     public interface ILeaderboardEntryDisplay
     {
+        /// <summary>
+        /// Gets or sets the leaderboard entry to be displayed.
+        /// </summary>
         LeaderboardEntry Entry { get; set; }
     }
 }

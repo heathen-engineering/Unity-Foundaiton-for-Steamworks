@@ -17,13 +17,21 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Displays a float Steam stat value in a TMP label.</summary>
+    /// <summary>
+    /// Displays a float Steam stat value in a TMP label.
+    /// </summary>
     [ModularComponent(typeof(SteamStatData), "Float Display", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamStatData))]
     public class SteamStatFloatDisplay : MonoBehaviour
     {
+        /// <summary>
+        /// The TextMeshPro label to display the stat in.
+        /// </summary>
         public TMPro.TextMeshProUGUI label;
+        /// <summary>
+        /// Optional format string, e.g. "{0:F2} m". Leave empty for the raw value.
+        /// </summary>
         [Tooltip("Optional format string, e.g. \"{0:F2} m\". Leave empty for the raw value.")]
         public string format;
 
@@ -39,6 +47,9 @@ namespace Heathen.SteamworksIntegration
             SteamTools.Interface.WhenReady(Refresh);
         }
 
+        /// <summary>
+        /// Refreshes the label with the current stat value.
+        /// </summary>
         public void Refresh()
         {
             if (label == null) return;

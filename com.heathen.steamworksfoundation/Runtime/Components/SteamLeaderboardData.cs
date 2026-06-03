@@ -20,31 +20,60 @@ using UnityEngine.Serialization;
 
 namespace Heathen.SteamworksIntegration
 {
+    /// <summary>
+    /// Represents a Steam leaderboard component.
+    /// </summary>
     [AddComponentMenu("Steamworks/Leaderboard")]
     [HelpURL("https://kb.heathen.group/steamworks/features/leaderboards")]
     public class SteamLeaderboardData : MonoBehaviour
     {
+        /// <summary>
+        /// Specifies the sort order for a new leaderboard.
+        /// </summary>
         public enum LeaderboardSortMethod
         {
+            /// <summary>The lowest score is at the top of the leaderboard.</summary>
             TopIsLowestScore  = 1,
+            /// <summary>The highest score is at the top of the leaderboard.</summary>
             TopIsHighestScore = 2,
         }
 
+        /// <summary>
+        /// Specifies the display type for a new leaderboard.
+        /// </summary>
         public enum LeaderboardDisplayType
         {
+            /// <summary>The leaderboard score is a simple number.</summary>
             Numeric        = 1,
+            /// <summary>The leaderboard score represents seconds.</summary>
             TimeSeconds    = 2,
+            /// <summary>The leaderboard score represents milliseconds.</summary>
             TimeMilliSeconds = 3,
         }
 
+        /// <summary>
+        /// The API name of the leaderboard.
+        /// </summary>
         public string               apiName;
+        /// <summary>
+        /// Should the leaderboard be created if it is not found on the Steam backend?
+        /// </summary>
         public bool                 createIfMissing;
+        /// <summary>
+        /// If creating, what display type should be used?
+        /// </summary>
         public LeaderboardDisplayType createAsDisplay = LeaderboardDisplayType.Numeric;
+        /// <summary>
+        /// If creating, what sort method should be used?
+        /// </summary>
         public LeaderboardSortMethod  createWithSort  = LeaderboardSortMethod.TopIsLowestScore;
 
         [FormerlySerializedAs("m_Delegates")] [SerializeField]
         private List<string> mDelegates;
 
+        /// <summary>
+        /// Gets or sets the leaderboard data.
+        /// </summary>
         public LeaderboardData Data
         {
             get => _data;

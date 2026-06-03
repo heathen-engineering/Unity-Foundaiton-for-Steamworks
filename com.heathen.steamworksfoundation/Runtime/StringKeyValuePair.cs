@@ -17,11 +17,15 @@ using System;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>A simple string key-value pair used for rich presence and other Steam string map data.</summary>
+    /// <summary>
+    /// A simple string key-value pair used for rich presence and other Steam string map data.
+    /// </summary>
     [Serializable]
     public struct StringKeyValuePair
     {
+        /// <summary>The key string.</summary>
         public string key;
+        /// <summary>The value string.</summary>
         public string value;
     }
 }

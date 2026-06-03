@@ -91,16 +91,31 @@ namespace Heathen.SteamworksIntegration
             return id.ToString();
         }
 
+        /// <summary>
+        /// Compares the current instance with an <see cref="AppData"/> object.
+        /// </summary>
+        /// <param name="other">The other app data to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(AppData other)
         {
             return id.CompareTo(other.AppId.m_AppId);
         }
 
+        /// <summary>
+        /// Compares the current instance with an <see cref="AppId_t"/>.
+        /// </summary>
+        /// <param name="other">The other ID to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(AppId_t other)
         {
             return id.CompareTo(other.m_AppId);
         }
 
+        /// <summary>
+        /// Compares the current instance with an unsigned integer app ID.
+        /// </summary>
+        /// <param name="other">The other ID to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(uint other)
         {
             return id.CompareTo(other);
@@ -131,20 +146,92 @@ namespace Heathen.SteamworksIntegration
             return id.Equals(other.AppId.m_AppId);
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(DlcData l, DlcData r) => l.id == r.id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(DlcData l, AppData r) => l.id == r.Id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(DlcData l, AppId_t r) => l.id == r.m_AppId;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(AppId_t l, DlcData r) => l.m_AppId == r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(DlcData l, DlcData r) => l.id != r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(DlcData l, AppData r) => l.id != r.AppId.m_AppId;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(DlcData l, AppId_t r) => l.id != r.m_AppId;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(AppId_t l, DlcData r) => l.m_AppId != r.id;
 
+        /// <summary>
+        /// Implicit conversion to <see cref="uint"/>.
+        /// </summary>
+        /// <param name="c">The DLC data.</param>
         public static implicit operator uint(DlcData c) => c.id;
+        /// <summary>
+        /// Implicit conversion from <see cref="uint"/>.
+        /// </summary>
+        /// <param name="id">The app ID as uint.</param>
         public static implicit operator DlcData(uint id) => new DlcData { id = id };
+        /// <summary>
+        /// Implicit conversion to <see cref="AppId_t"/>.
+        /// </summary>
+        /// <param name="c">The DLC data.</param>
         public static implicit operator AppId_t(DlcData c) => c.AppId;
+        /// <summary>
+        /// Implicit conversion from <see cref="AppId_t"/>.
+        /// </summary>
+        /// <param name="id">The app ID.</param>
         public static implicit operator DlcData(AppId_t id) => new DlcData { id = id.m_AppId };
+        /// <summary>
+        /// Implicit conversion from <see cref="AppData"/>.
+        /// </summary>
+        /// <param name="id">The app data.</param>
         public static implicit operator DlcData(AppData id) => new DlcData { id = id.Id };
+        /// <summary>
+        /// Implicit conversion to <see cref="AppData"/>.
+        /// </summary>
+        /// <param name="id">The DLC data.</param>
         public static implicit operator AppData(DlcData id) => AppData.Get(id.id);
         #endregion
     }

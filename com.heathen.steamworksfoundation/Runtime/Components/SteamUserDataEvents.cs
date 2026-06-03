@@ -21,15 +21,19 @@ using UnityEngine.EventSystems;
 
 namespace Heathen.SteamworksIntegration
 {
+    /// <summary>
+    /// Modular events component for <see cref="SteamUserData"/>.
+    /// </summary>
     [ModularEvents(typeof(SteamUserData))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
     public class SteamUserDataEvents : MonoBehaviour, IPointerClickHandler
     {
+        /// <summary>Event invoked when the user's persona state or data changes.</summary>
         [EventField]
         public UnityEvent<UserData, EPersonaChange> onChange;
         /// <summary>
-        /// A <see cref="UnityEngine.Events.UnityEvent"/> that will be invoked when the user clicks the UI element
+        /// Event invoked when the user clicks on the UI element.
         /// </summary>
         [EventField]
         public UnityUserAndPointerDataEvent onClick;

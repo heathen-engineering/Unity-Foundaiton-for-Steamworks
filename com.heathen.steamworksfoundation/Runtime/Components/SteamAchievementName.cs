@@ -17,12 +17,17 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Displays the localised name of a Steam achievement.</summary>
+    /// <summary>
+    /// Displays the localised name of a Steam achievement.
+    /// </summary>
     [ModularComponent(typeof(SteamAchievementData), "Names", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamAchievementData))]
     public class SteamAchievementName : MonoBehaviour
     {
+        /// <summary>
+        /// The TextMeshPro label to display the achievement name in.
+        /// </summary>
         public TMPro.TextMeshProUGUI label;
 
         private SteamAchievementData _mData;
@@ -37,6 +42,9 @@ namespace Heathen.SteamworksIntegration
             SteamTools.Interface.WhenReady(Refresh);
         }
 
+        /// <summary>
+        /// Refreshes the label with the localised achievement name.
+        /// </summary>
         public void Refresh()
         {
             if (label != null && !string.IsNullOrEmpty(_mData.apiName))

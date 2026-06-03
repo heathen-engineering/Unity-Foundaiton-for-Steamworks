@@ -18,15 +18,23 @@ using UnityEngine.Events;
 
 namespace Heathen.SteamworksIntegration
 {
+    /// <summary>
+    /// Modular events component for <see cref="SteamLeaderboardData"/>.
+    /// </summary>
     [ModularEvents(typeof(SteamLeaderboardData))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
     public class SteamLeaderboardDataEvents : MonoBehaviour, ISteamLeaderboardDataEvents
     {
+        /// <summary>Event invoked when the leaderboard data changes.</summary>
         [EventField] public UnityEvent                           onChange;
+        /// <summary>Event invoked when a leaderboard is found or created.</summary>
         [EventField] public UnityEvent                           onFindOrCreate;
+        /// <summary>Event invoked when a leaderboard find or create operation fails.</summary>
         [EventField] public UnityEvent                           onFindOrCreateFailure;
+        /// <summary>Event invoked when a score is successfully uploaded to the leaderboard.</summary>
         [EventField] public UnityEvent<LeaderboardScoreUploaded> onScoreUploaded;
+        /// <summary>Event invoked when the local user's rank on the leaderboard changes.</summary>
         [EventField] public UnityEvent<LeaderboardScoreUploaded> onRankChanged;
 
         UnityEvent ISteamLeaderboardDataEvents.onChange => onChange;

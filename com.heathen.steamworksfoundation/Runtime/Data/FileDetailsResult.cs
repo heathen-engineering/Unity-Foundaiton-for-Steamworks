@@ -46,7 +46,15 @@ namespace Heathen.SteamworksIntegration
         /// </summary>
         public uint Flags => Data.m_unFlags;
 
+        /// <summary>
+        /// Implicit conversion from native <see cref="FileDetailsResult_t"/>.
+        /// </summary>
+        /// <param name="native">The native Steamworks result.</param>
         public static implicit operator FileDetailsResult(FileDetailsResult_t native) => new FileDetailsResult { Data = native };
+        /// <summary>
+        /// Implicit conversion to native <see cref="FileDetailsResult_t"/>.
+        /// </summary>
+        /// <param name="heathen">The Heathen wrapper.</param>
         public static implicit operator FileDetailsResult_t(FileDetailsResult heathen) => heathen.Data;
     }
 }

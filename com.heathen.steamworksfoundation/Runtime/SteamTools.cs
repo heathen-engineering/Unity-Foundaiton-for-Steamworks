@@ -182,7 +182,7 @@ namespace SteamTools
                     if (initMethod != null)
                         initMethod.Invoke(null, null);
                     else
-                        Debug.LogError("Unable to locate SteamTools.Game.Initialise method make sure your generate wrapper before attempting to initialise.");
+                        Debug.LogError("Unable to locate SteamTools.Game.Initialise method make sure you generate wrapper before attempting to initialise.");
                 }
                 else
                 {
@@ -440,12 +440,37 @@ namespace SteamTools
         // Public invoke helpers (called by Foundation API layer; also callable by Toolkit)
         // -----------------------------------------------------------------------
 
+        /// <summary>
+        /// Invokes the <see cref="OnSteamInitialised"/> event.
+        /// </summary>
         public static void InvokeOnSteamInitialised()                     => OnSteamInitialised?.Invoke();
+        /// <summary>
+        /// Invokes the <see cref="OnSteamInitialisationError"/> event.
+        /// </summary>
+        /// <param name="msg">The error message.</param>
         public static void InvokeOnSteamInitialisationError(string msg)   => OnSteamInitialisationError?.Invoke(msg);
+        /// <summary>
+        /// Invokes the <see cref="OnKeyboardShown"/> event.
+        /// </summary>
         public static void InvokeOnKeyboardShown()                        => OnKeyboardShown?.Invoke();
+        /// <summary>
+        /// Invokes the <see cref="OnGamepadTextInputShown"/> event.
+        /// </summary>
         public static void InvokeOnGamepadTextInputShown()                => OnGamepadTextInputShown?.Invoke();
+        /// <summary>
+        /// Invokes the <see cref="OnControllerConnected"/> event.
+        /// </summary>
+        /// <param name="h">The handle of the connected controller.</param>
         public static void InvokeOnControllerConnected(InputHandle_t h)   => OnControllerConnected?.Invoke(h);
+        /// <summary>
+        /// Invokes the <see cref="OnControllerDisconnected"/> event.
+        /// </summary>
+        /// <param name="h">The handle of the disconnected controller.</param>
         public static void InvokeOnControllerDisconnected(InputHandle_t h)=> OnControllerDisconnected?.Invoke(h);
+        /// <summary>
+        /// Invokes the <see cref="OnLobbyLeave"/> event.
+        /// </summary>
+        /// <param name="lobby">The lobby being left.</param>
         public static void InvokeOnLobbyLeave(LobbyData lobby)            => OnLobbyLeave?.Invoke(lobby);
 
         // -----------------------------------------------------------------------
@@ -641,7 +666,7 @@ namespace SteamTools
     // -----------------------------------------------------------------------
 
     /// <summary>
-    /// Provides a collection of predefined colour values for use with Steam-related utilities and editors.
+    /// Static class containing Steam-related colours.
     /// </summary>
     public static class Colors
     {

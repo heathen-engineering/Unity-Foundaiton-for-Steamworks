@@ -25,9 +25,13 @@ namespace Heathen.SteamworksIntegration
     /// </summary>
     public interface ISteamLeaderboardDataEvents
     {
+        /// <summary>Event invoked when the leaderboard data changes.</summary>
         UnityEvent onChange { get; }
+        /// <summary>Event invoked when a leaderboard is found or created.</summary>
         UnityEvent onFindOrCreate { get; }
+        /// <summary>Event invoked when a leaderboard find or create operation fails.</summary>
         UnityEvent onFindOrCreateFailure { get; }
+        /// <summary>Event invoked when the local user's rank on the leaderboard changes.</summary>
         UnityEvent<LeaderboardScoreUploaded> onRankChanged { get; }
     }
 }

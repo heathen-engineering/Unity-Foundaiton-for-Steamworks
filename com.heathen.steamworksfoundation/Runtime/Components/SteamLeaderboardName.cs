@@ -17,12 +17,17 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Displays the display name of the tracked leaderboard in a TMP label.</summary>
+    /// <summary>
+    /// Displays the display name of the tracked leaderboard in a TMP label.
+    /// </summary>
     [ModularComponent(typeof(SteamLeaderboardData), "Names", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
     public class SteamLeaderboardName : MonoBehaviour
     {
+        /// <summary>
+        /// The TextMeshPro label to display the leaderboard name in.
+        /// </summary>
         public TMPro.TextMeshProUGUI label;
 
         private SteamLeaderboardData        _mInspector;

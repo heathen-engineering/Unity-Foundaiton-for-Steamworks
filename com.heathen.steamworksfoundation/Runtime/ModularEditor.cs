@@ -9,9 +9,18 @@ using System.Linq;
 
 namespace Heathen.SteamworksIntegration
 {
+    /// <summary>
+    /// Base class for modular editors in the Steamworks integration.
+    /// </summary>
     public abstract class ModularEditor : Editor
     {
+        /// <summary>
+        /// Gets the target GameObject of the component being edited.
+        /// </summary>
         protected GameObject TargetGo => ((Component)target).gameObject;
+        /// <summary>
+        /// A cache of serialised objects for components to avoid repeated instantiation.
+        /// </summary>
         protected readonly Dictionary<Component, SerializedObject> SoCache = new();
 
         /// <summary>
@@ -19,6 +28,11 @@ namespace Heathen.SteamworksIntegration
         /// </summary>
         protected abstract Type[] AllowedTypes { get; }
 
+        /// <summary>
+        /// Retrieves the serialised object for a component, using the cache if available.
+        /// </summary>
+        /// <param name="comp">The component to get the serialised object for.</param>
+        /// <returns>The serialised object.</returns>
         protected SerializedObject GetSo(Component comp)
         {
             if (!comp) return null;
@@ -31,8 +45,14 @@ namespace Heathen.SteamworksIntegration
         // ---------------------------------------------------------------
         // Filtered Allowed Types
         // ---------------------------------------------------------------
+        /// <summary>
+        /// The type of the object being edited by this editor.
+        /// </summary>
         private Type ParentType => target.GetType();
 
+        /// <summary>
+        /// Gets the filtered list of allowed modular component types for the current target.
+        /// </summary>
         protected IEnumerable<Type> FilteredAllowedTypes
         {
             get
@@ -58,6 +78,9 @@ namespace Heathen.SteamworksIntegration
         // ---------------------------------------------------------------
         // Field / Function Dropdown Handling
         // ---------------------------------------------------------------
+        /// <summary>
+        /// Draws a dropdown menu for adding new modular components.
+        /// </summary>
         protected void DrawAddFieldDropdown()
         {
             var options = new List<string> { "... Add New" };
@@ -88,6 +111,9 @@ namespace Heathen.SteamworksIntegration
             }
         }
 
+        /// <summary>
+        /// Draws flags for single-instance modular components and events.
+        /// </summary>
         // ReSharper disable Unity.PerformanceAnalysis
         protected void DrawFunctionFlags()
         {
@@ -192,6 +218,9 @@ namespace Heathen.SteamworksIntegration
         // ---------------------------------------------------------------
         // Modular Component Drawing
         // ---------------------------------------------------------------
+        /// <summary>
+        /// Draws the modular components that have been added to the target.
+        /// </summary>
         protected void DrawModularComponents()
         {
             // Group components by type (only ones that have FieldName set)
@@ -255,6 +284,11 @@ namespace Heathen.SteamworksIntegration
         // ---------------------------------------------------------------
         // Fields / Settings / Elements / Templates
         // ---------------------------------------------------------------
+        /// <summary>
+        /// Draws fields marked with a specific modular attribute.
+        /// </summary>
+        /// <typeparam name="TAttr">The type of attribute to look for.</typeparam>
+        /// <param name="label">The label for the group of fields.</param>
         protected void DrawFields<TAttr>(string label) where TAttr : PropertyAttribute
         {
             var comps = GetModularComponents().ToArray();
@@ -346,6 +380,10 @@ namespace Heathen.SteamworksIntegration
         // ---------------------------------------------------------------
         // Events
         // ---------------------------------------------------------------
+        /// <summary>
+        /// Draws event fields for the modular event component.
+        /// </summary>
+        /// <param name="label">The label for the event fields.</param>
         protected void DrawEventFields(string label = "Events")
         {
             var evtComp = GetModularEventComponents().FirstOrDefault();
@@ -421,6 +459,14 @@ namespace Heathen.SteamworksIntegration
         // ---------------------------------------------------------------
         // Utility
         // ---------------------------------------------------------------
+        /// <summary>
+        /// Draws the default modular interface including header links, feature dropdowns, and modular fields/events.
+        /// </summary>
+        /// <param name="settingsLink">Optional link to the Unity Project Settings page for this feature.</param>
+        /// <param name="portalLink">Optional link to the Steamworks partner portal for this feature.</param>
+        /// <param name="guideLink">Optional link to the Heathen knowledge base guide.</param>
+        /// <param name="supportLink">Optional link to support resources.</param>
+        /// <param name="localFields">Optional array of specific serialised properties to draw before modular elements.</param>
         protected void DrawDefault(
             string settingsLink = null,
             string portalLink = null,

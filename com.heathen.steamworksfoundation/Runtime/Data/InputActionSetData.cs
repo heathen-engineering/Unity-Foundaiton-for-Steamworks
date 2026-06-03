@@ -80,18 +80,82 @@ namespace Heathen.SteamworksIntegration
             return handle.GetHashCode();
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(InputActionSetData l, InputActionSetHandle_t r) => l.handle == r;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(InputActionSetData l, ulong r) => l.handle == new InputActionSetHandle_t(r);
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(InputActionSetHandle_t l, InputActionSetData r) => l == r.handle;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(ulong l, InputActionSetData r) => new InputActionSetHandle_t(l) == r.handle;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(InputActionSetData l, InputActionSetHandle_t r) => l.handle != r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(InputActionSetData l, ulong r) => l.handle != new InputActionSetHandle_t(r);
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(InputActionSetHandle_t l, InputActionSetData r) => l != r.handle;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(ulong l, InputActionSetData r) => new InputActionSetHandle_t(l) != r.handle;
 
+        /// <summary>
+        /// Implicit conversion to <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="c">The input action set data.</param>
         public static implicit operator ulong(InputActionSetData c) => c.handle.m_InputActionSetHandle;
+        /// <summary>
+        /// Implicit conversion from <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="id">The handle value.</param>
         public static implicit operator InputActionSetData(ulong id) => Get(id);
+        /// <summary>
+        /// Implicit conversion to <see cref="InputActionSetHandle_t"/>.
+        /// </summary>
+        /// <param name="c">The input action set data.</param>
         public static implicit operator InputActionSetHandle_t(InputActionSetData c) => c.handle;
+        /// <summary>
+        /// Implicit conversion from <see cref="InputActionSetHandle_t"/>.
+        /// </summary>
+        /// <param name="id">The handle.</param>
         public static implicit operator InputActionSetData(InputActionSetHandle_t id) => Get(id);
     }
 }

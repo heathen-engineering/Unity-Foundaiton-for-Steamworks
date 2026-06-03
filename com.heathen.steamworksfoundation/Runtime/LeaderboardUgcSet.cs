@@ -17,14 +17,27 @@ using Steamworks;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Wraps the native <see cref="LeaderboardUGCSet_t"/> callback result.</summary>
+    /// <summary>
+    /// Wraps the native <see cref="LeaderboardUGCSet_t"/> callback result.
+    /// </summary>
     public struct LeaderboardUgcSet
     {
+        /// <summary>The raw leaderboard UGC set result data from Steamworks.</summary>
         public LeaderboardUGCSet_t Data;
+        /// <summary>The result of the UGC set operation.</summary>
         public EResult        Result      => Data.m_eResult;
+        /// <summary>The leaderboard data associated with the operation.</summary>
         public LeaderboardData Leaderboard => Data.m_hSteamLeaderboard;
 
+        /// <summary>
+        /// Implicit conversion from native <see cref="LeaderboardUGCSet_t"/>.
+        /// </summary>
+        /// <param name="native">The native result.</param>
         public static implicit operator LeaderboardUgcSet(LeaderboardUGCSet_t native)   => new() { Data = native };
+        /// <summary>
+        /// Implicit conversion to native <see cref="LeaderboardUGCSet_t"/>.
+        /// </summary>
+        /// <param name="heathen">The Heathen wrapper.</param>
         public static implicit operator LeaderboardUGCSet_t(LeaderboardUgcSet heathen) => heathen.Data;
     }
 }

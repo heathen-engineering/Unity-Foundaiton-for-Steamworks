@@ -136,7 +136,7 @@ namespace Heathen.SteamworksIntegration.API
             /// <summary>
             /// Gets the 2-digit ISO 3166-1-alpha-2 format country code based on the client’s IP location.
             /// This property utilises an IP-to-location database to determine the geographical location of the client.
-            /// For example, it may return values like "US" for the United States or "UK" for the United Kingdom.
+            /// For example, it may return values like "US" for the United States or "GB" for the United Kingdom.
             /// </summary>
             public static string IpCountry => SteamUtils.GetIPCountry();
 
@@ -269,6 +269,10 @@ namespace Heathen.SteamworksIntegration.API
                 }
             }
 
+            /// <summary>
+            /// Retrieves the local ping location as a string.
+            /// </summary>
+            /// <returns>The ping location string, or an empty string if retrieval fails.</returns>
             public static string GetPingLocationString()
             {
                 if (SteamNetworkingUtils.GetLocalPingLocation(out var location) < 0) 
@@ -278,6 +282,11 @@ namespace Heathen.SteamworksIntegration.API
                 return locationString.Trim();
             }
 
+            /// <summary>
+            /// Estimates the ping time to a specified location.
+            /// </summary>
+            /// <param name="locationString">The string representation of the remote ping location.</param>
+            /// <returns>The estimated ping time in milliseconds, or -1 if the local location cannot be determined.</returns>
             public static int PingLocation(string locationString)
             {
                 if (SteamNetworkingUtils.GetLocalPingLocation(out var myLocation) < 0) 
@@ -287,6 +296,12 @@ namespace Heathen.SteamworksIntegration.API
                 return SteamNetworkingUtils.EstimatePingTimeBetweenTwoLocations(ref myLocation, ref remoteLocation);
             }
 
+            /// <summary>
+            /// Estimates the ping time between two specified locations.
+            /// </summary>
+            /// <param name="fromLocationString">The starting location string.</param>
+            /// <param name="toLocationString">The target location string.</param>
+            /// <returns>The estimated ping time in milliseconds.</returns>
             public static int PingBetweenLocations(string fromLocationString, string toLocationString)
             {
                 SteamNetworkingUtils.ParsePingLocationString(fromLocationString, out var fromLocation);
@@ -295,8 +310,15 @@ namespace Heathen.SteamworksIntegration.API
             }
         }
 
+        /// <summary>
+        /// Provides utility methods for Steam Game Servers.
+        /// </summary>
         public static class Server
         {
+            /// <summary>
+            /// Retrieves the server's local ping location as a string.
+            /// </summary>
+            /// <returns>The ping location string, or an empty string if retrieval fails.</returns>
             public static string GetPingLocationString()
             {
                 if (SteamGameServerNetworkingUtils.GetLocalPingLocation(out var location) < 0) 
@@ -306,6 +328,11 @@ namespace Heathen.SteamworksIntegration.API
                 return locationString.Trim();
             }
             
+            /// <summary>
+            /// Estimates the ping time from the server to a specified location.
+            /// </summary>
+            /// <param name="locationString">The string representation of the remote ping location.</param>
+            /// <returns>The estimated ping time in milliseconds, or -1 if the server's location cannot be determined.</returns>
             public static int PingLocation(string locationString)
             {
                 if (SteamGameServerNetworkingUtils.GetLocalPingLocation(out var myLocation) < 0) 
@@ -315,6 +342,12 @@ namespace Heathen.SteamworksIntegration.API
                 return SteamGameServerNetworkingUtils.EstimatePingTimeBetweenTwoLocations(ref myLocation, ref remoteLocation);
             }
 
+            /// <summary>
+            /// Estimates the ping time between two specified locations using server utilities.
+            /// </summary>
+            /// <param name="fromLocationString">The starting location string.</param>
+            /// <param name="toLocationString">The target location string.</param>
+            /// <returns>The estimated ping time in milliseconds.</returns>
             public static int PingBetweenLocations(string fromLocationString, string toLocationString)
             {
                 SteamGameServerNetworkingUtils.ParsePingLocationString(fromLocationString, out var fromLocation);

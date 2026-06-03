@@ -20,26 +20,37 @@ using UnityEngine.Events;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Represents a single leaderboard entry, including optional UGC attachment support.</summary>
+    /// <summary>
+    /// Represents a single leaderboard entry, including optional UGC attachment support.
+    /// </summary>
     public class LeaderboardEntry
     {
+        /// <summary>The raw leaderboard entry data from Steamworks.</summary>
         public LeaderboardEntry_t Entry;
+        /// <summary>The array of details (extra data) associated with this entry.</summary>
         public int[]   Details;
+        /// <summary>The user associated with this entry.</summary>
         public UserData User      => Entry.m_steamIDUser;
+        /// <summary>The global rank of this entry on the leaderboard.</summary>
         public int      Rank      => Entry.m_nGlobalRank;
+        /// <summary>The score associated with this entry.</summary>
         public int      Score     => Entry.m_nScore;
+        /// <summary>The handle to the UGC file attached to this entry, if any.</summary>
         public UGCHandle_t UgcHandle => Entry.m_hUGC;
+        /// <summary>Gets the detail value at the specified index.</summary>
+        /// <param name="index">The index of the detail value to retrieve.</param>
         public int this[int index] => Details[index];
 
         /// <summary>Cached file name from the last successful UGC download.</summary>
         public string CachedUgcFileName = string.Empty;
+        /// <summary>Indicates whether a UGC file name is cached.</summary>
         public bool   HasCachedUgcFileName => !string.IsNullOrEmpty(CachedUgcFileName);
 
         /// <summary>Invoked when a UGC download completes, providing the file name (or null on failure).</summary>
         public UnityEvent<string> EvtUgcDownloaded = new();
 
         /// <summary>
-        /// Downloads the UGC file attached to this entry and deserializes it as <typeparamref name="T"/>.
+        /// Downloads the UGC file attached to this entry and deserialises it as <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">A JsonUtility-serialisable type.</typeparam>
         /// <param name="callback">Receives the result and a failure flag. If failure is true an error occurred.</param>

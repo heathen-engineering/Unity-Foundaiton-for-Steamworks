@@ -170,15 +170,15 @@ namespace Heathen.SteamworksIntegration.API
             /// </summary>
             /// <param name="achievementApiName">The 'API Name' of the achievement.</param>
             /// <param name="achieved">Returns the unlocked status of the achievement.</param>
-            /// <returns></returns>
+            /// <returns>True if the request was successful.</returns>
             public static bool GetAchievement(string achievementApiName, out bool achieved) => SteamUserStats.GetAchievement(achievementApiName, out achieved);
             /// <summary>
             /// Returns the percentage of users who have unlocked the specified achievement.
             /// </summary>
             /// <param name="achievementApiName">The 'API Name' of the achievement.</param>
             /// <param name="achieved">Returns whether the current user has unlocked the achievement.</param>
-            /// <param name="unlockTime">Returns the time that the achievement was unlocked;</param>
-            /// <returns></returns>
+            /// <param name="unlockTime">Returns the time that the achievement was unlocked.</param>
+            /// <returns>True if the request was successful.</returns>
             public static bool GetAchievement(string achievementApiName, out bool achieved, out DateTime unlockTime)
             {
                 var result = SteamUserStats.GetAchievementAndUnlockTime(achievementApiName, out achieved, out uint epoch);
@@ -191,16 +191,16 @@ namespace Heathen.SteamworksIntegration.API
             /// <param name="userId">The Steam ID of the user to get the achievement for.</param>
             /// <param name="achievementApiName">The 'API Name' of the achievement.</param>
             /// <param name="achieved">Returns the unlocked status of the achievement.</param>
-            /// <returns></returns>
+            /// <returns>True if the request was successful.</returns>
             public static bool GetAchievement(UserData userId, string achievementApiName, out bool achieved) => SteamUserStats.GetUserAchievement(userId, achievementApiName, out achieved);
             /// <summary>
             /// Gets the achievement status, and the time it was unlocked if unlocked.
             /// </summary>
-            /// <param name="userId"></param>
+            /// <param name="userId">The user whose stats were requested.</param>
             /// <param name="achievementApiName">The 'API Name' of the achievement.</param>
             /// <param name="achieved">Returns the unlocked status of the achievement.</param>
             /// <param name="unlockTime">Returns the time that the achievement was unlocked.</param>
-            /// <returns></returns>
+            /// <returns>True if the request was successful.</returns>
             public static bool GetAchievement(UserData userId, string achievementApiName, out bool achieved, out DateTime unlockTime)
             {
                 var result = SteamUserStats.GetUserAchievementAndUnlockTime(userId, achievementApiName, out achieved, out uint epoch);
@@ -212,28 +212,28 @@ namespace Heathen.SteamworksIntegration.API
             /// </summary>
             /// <param name="achievementApiName">The 'API Name' of the achievement.</param>
             /// <param name="percent">Variable to return the percentage of people that have unlocked this achievement from 0 to 100.</param>
-            /// <returns></returns>
+            /// <returns>True if the request was successful.</returns>
             public static bool GetAchievementAchievedPercent(string achievementApiName, out float percent) => SteamUserStats.GetAchievementAchievedPercent(achievementApiName, out percent);
             /// <summary>
             /// Get general attributes for an achievement. Currently, provides: Name, Description, and Hidden status.
             /// </summary>
             /// <param name="achievementApiName">The 'API Name' of the achievement.</param>
             /// <param name="key">The 'key' to get a value for.</param>
-            /// <returns></returns>
+            /// <returns>The value associated with the key.</returns>
             public static string GetAchievementDisplayAttribute(string achievementApiName, string key) => SteamUserStats.GetAchievementDisplayAttribute(achievementApiName, key);
             /// <summary>
             /// Get general attributes for an achievement. Currently, provides: Name, Description, and Hidden status.
             /// </summary>
             /// <param name="achievementApiName">The 'API Name' of the achievement.</param>
-            /// <param name="attribute">The 'attribute' to get a value for.</param>
-            /// <returns></returns>
+            /// <param name="attribute">The <see cref="AchievementAttributes"/> to get a value for.</param>
+            /// <returns>The value associated with the attribute.</returns>
             public static string GetAchievementDisplayAttribute(string achievementApiName, AchievementAttributes attribute) => SteamUserStats.GetAchievementDisplayAttribute(achievementApiName, attribute.ToString());
             /// <summary>
             /// Gets the icon for an achievement.
             /// </summary>
-            /// <param name="achievementApiName"></param>
-            /// <param name="callback"></param>
-            /// <returns>True if request was successfully sent to Steam, if False this indicates that either the API name is not valid or that User Stats have not been requested, please check <see cref="UserStatsLoaded"/> before working with achievements or stats.</returns>
+            /// <param name="achievementApiName">The 'API Name' of the achievement.</param>
+            /// <param name="callback">A callback invoked when the icon is loaded.</param>
+            /// <returns>True if request was successfully sent to Steam, if False this indicates that either the API name is not valid or that User Stats have not been requested, please check <see cref="OnUserStatsReceived"/> before working with achievements or stats.</returns>
             public static bool GetAchievementIcon(string achievementApiName, Action<Texture2D> callback)
             {
                 //Valve seems to sometimes not register the icon fetched callback unless a read has been done on the achievement ... so do a read then request

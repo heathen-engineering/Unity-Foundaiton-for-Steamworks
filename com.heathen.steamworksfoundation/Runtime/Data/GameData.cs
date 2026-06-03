@@ -174,19 +174,88 @@ namespace Heathen.SteamworksIntegration
             return GameId.GetHashCode();
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(GameData l, GameData r) => l.GameId.m_GameID == r.GameId.m_GameID;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(AppId_t l, GameData r) => l == r.App;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(GameData l, AppId_t r) => l.App == r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(GameData l, GameData r) => l.GameId.m_GameID != r.GameId.m_GameID;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(AppId_t l, GameData r) => l != r.App;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(GameData l, AppId_t r) => l.App != r;
 
+        /// <summary>
+        /// Implicit conversion from <see cref="CGameID"/>.
+        /// </summary>
+        /// <param name="id">The game ID.</param>
+        public static implicit operator GameData(CSteamID id) => new GameData { id = id.m_SteamID };
+        /// <summary>
+        /// Implicit conversion from <see cref="CGameID"/>.
+        /// </summary>
+        /// <param name="id">The game ID.</param>
         public static implicit operator GameData(CGameID id) => new GameData { id = id.m_GameID };
+        /// <summary>
+        /// Implicit conversion to <see cref="uint"/>.
+        /// </summary>
+        /// <param name="c">The game data.</param>
         public static implicit operator uint(GameData c) => c.App.Id;
+        /// <summary>
+        /// Implicit conversion to <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="c">The game data.</param>
         public static implicit operator ulong(GameData c) => c.Id;
+        /// <summary>
+        /// Implicit conversion from <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="id">The game ID as ulong.</param>
         public static implicit operator GameData(ulong id) => new GameData { id = id };
+        /// <summary>
+        /// Implicit conversion from <see cref="uint"/>.
+        /// </summary>
+        /// <param name="id">The app ID as uint.</param>
         public static implicit operator GameData(uint id) => new GameData { id = new CGameID(new AppId_t(id)).m_GameID };
+        /// <summary>
+        /// Implicit conversion to <see cref="AppId_t"/>.
+        /// </summary>
+        /// <param name="c">The game data.</param>
         public static implicit operator AppId_t(GameData c) => c.App;
+        /// <summary>
+        /// Implicit conversion from <see cref="AppId_t"/>.
+        /// </summary>
+        /// <param name="id">The app ID.</param>
         public static implicit operator GameData(AppId_t id) => new CGameID(id);
         #endregion
     }

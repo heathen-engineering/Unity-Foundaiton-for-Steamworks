@@ -18,7 +18,7 @@ using UnityEngine;
 namespace Heathen.SteamworksIntegration
 {
     /// <summary>
-    /// Defines the structure for a Steam Achievement, providing information such as
+    /// Represents the structure for a Steam achievement, providing information such as
     /// name, description, hidden status, achievement status, unlock time, global unlock percentage,
     /// and various methods for manipulating and querying the achievement state.
     /// </summary>
@@ -216,24 +216,78 @@ namespace Heathen.SteamworksIntegration
             return id.GetHashCode();
         }
 
+        /// <summary>
+        /// Compares this instance to another <see cref="AchievementData"/>.
+        /// </summary>
+        /// <param name="other">The other achievement to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(AchievementData other)
         {
             return string.Compare(id, other.id, StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Compares this instance to a string API name.
+        /// </summary>
+        /// <param name="other">The API name to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(string other)
         {
             return string.Compare(id, other, StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(AchievementData l, AchievementData r) => l.id == r.id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(string l, AchievementData r) => l == r.id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(AchievementData l, string r) => l.id == r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(AchievementData l, AchievementData r) => l.id != r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(string l, AchievementData r) => l != r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(AchievementData l, string r) => l.id != r;
 
+        /// <summary>
+        /// Implicit conversion to string.
+        /// </summary>
+        /// <param name="c">The achievement data.</param>
         public static implicit operator string(AchievementData c) => string.IsNullOrEmpty(c.id) ? string.Empty : c.id;
+        /// <summary>
+        /// Implicit conversion from string.
+        /// </summary>
+        /// <param name="id">The API name.</param>
         public static implicit operator AchievementData(string id) => new() { id = id };
 
         #endregion

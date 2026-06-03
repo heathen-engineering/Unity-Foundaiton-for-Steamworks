@@ -27,6 +27,9 @@ namespace Heathen.SteamworksIntegration
     [RequireComponent(typeof(SteamLeaderboardData))]
     public class SteamLeaderboardUserEntry : MonoBehaviour
     {
+        /// <summary>
+        /// A component that implements <see cref="ILeaderboardEntryDisplay"/>, e.g. <see cref="SteamLeaderboardEntryUI"/>.
+        /// </summary>
         [Tooltip("A component that implements ILeaderboardEntryDisplay, e.g. SteamLeaderboardEntryUI.")]
         public SteamLeaderboardEntryUI entryUI;
 
@@ -54,6 +57,9 @@ namespace Heathen.SteamworksIntegration
             }
         }
 
+        /// <summary>
+        /// Refreshes the display with the local user's current leaderboard entry.
+        /// </summary>
         public void Refresh()
         {
             if (!_mInspector.Data.IsValid || entryUI == null) return;

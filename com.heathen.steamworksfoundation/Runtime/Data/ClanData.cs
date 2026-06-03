@@ -86,16 +86,31 @@ namespace Heathen.SteamworksIntegration
 
         #region Boilerplate
 
+        /// <summary>
+        /// Compares the current instance with a <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="other">The other ID to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(CSteamID other)
         {
             return id.CompareTo(other.m_SteamID);
         }
 
+        /// <summary>
+        /// Compares the current instance with another <see cref="ClanData"/>.
+        /// </summary>
+        /// <param name="other">The other clan data to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(ClanData other)
         {
             return id.CompareTo(other.id);
         }
 
+        /// <summary>
+        /// Compares the current instance with a 64-bit Steam ID.
+        /// </summary>
+        /// <param name="other">The other ID to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(ulong other)
         {
             return id.CompareTo(other);
@@ -131,19 +146,95 @@ namespace Heathen.SteamworksIntegration
             return id.GetHashCode();
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(ClanData l, ClanData r) => l.id == r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(ClanData l, ClanData r) => l.id != r.id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(ClanData l, CSteamID r) => l.id == r.m_SteamID;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(ClanData l, CSteamID r) => l.id != r.m_SteamID;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(CSteamID l, ClanData r) => l.m_SteamID == r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(CSteamID l, ClanData r) => l.m_SteamID != r.id;
+        /// <summary>
+        /// Less than operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if less than.</returns>
         public static bool operator <(ClanData l, ClanData r) => l.id < r.id;
+        /// <summary>
+        /// Greater than operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if greater than.</returns>
         public static bool operator >(ClanData l, ClanData r) => l.id > r.id;
+        /// <summary>
+        /// Less than or equal operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if less than or equal.</returns>
         public static bool operator <=(ClanData l, ClanData r) => l.id <= r.id;
+        /// <summary>
+        /// Greater than or equal operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if greater than or equal.</returns>
         public static bool operator >=(ClanData l, ClanData r) => l.id >= r.id;
+        /// <summary>
+        /// Implicit conversion to <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="c">The clan data.</param>
         public static implicit operator CSteamID(ClanData c) => c.SteamId;
+        /// <summary>
+        /// Implicit conversion from <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="id">The Steam ID.</param>
         public static implicit operator ClanData(CSteamID id) => new ClanData { id = id.m_SteamID };
+        /// <summary>
+        /// Implicit conversion to <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="c">The clan data.</param>
         public static implicit operator ulong(ClanData c) => c.id;
+        /// <summary>
+        /// Implicit conversion from <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="id">The Steam ID as ulong.</param>
         public static implicit operator ClanData(ulong id) => new ClanData { id = id };
     #endregion
     }

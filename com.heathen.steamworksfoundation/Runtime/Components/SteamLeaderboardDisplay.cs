@@ -29,10 +29,19 @@ namespace Heathen.SteamworksIntegration
     [RequireComponent(typeof(SteamLeaderboardData))]
     public class SteamLeaderboardDisplay : MonoBehaviour
     {
+        /// <summary>
+        /// The transform that will act as the parent for instantiated entry prefabs.
+        /// </summary>
         [ElementField("Display")]
         public Transform collectionRoot;
+        /// <summary>
+        /// The prefab template to instantiate for each leaderboard entry.
+        /// </summary>
         [TemplateField("Display")]
         public GameObject entryTemplate;
+        /// <summary>
+        /// Should the local player's entry always be included in the display, even if they are not in the retrieved range?
+        /// </summary>
         [TemplateField("Display")]
         public bool alwaysIncludePlayer;
 
@@ -44,12 +53,20 @@ namespace Heathen.SteamworksIntegration
             _mInspector = GetComponent<SteamLeaderboardData>();
         }
 
+        /// <summary>
+        /// Requests the top entries for the leaderboard and displays them.
+        /// </summary>
+        /// <param name="count">The number of entries to retrieve.</param>
         public void GetTopEntries(int count)
         {
             if (_mInspector.Data.IsValid)
                 _mInspector.Data.GetTopEntries(count, 0, HandleResults);
         }
 
+        /// <summary>
+        /// Requests entries around the local user and displays them.
+        /// </summary>
+        /// <param name="count">The number of entries to retrieve.</param>
         public void GetNearByEntries(int count)
         {
             if (_mInspector.Data.IsValid)
@@ -58,6 +75,13 @@ namespace Heathen.SteamworksIntegration
                     -count / 2, count / 2, 0, HandleResults);
         }
 
+        /// <summary>
+        /// Requests leaderboard entries for a specific range and displays them.
+        /// </summary>
+        /// <param name="request">The type of range to request.</param>
+        /// <param name="start">The start index.</param>
+        /// <param name="end">The end index.</param>
+        /// <param name="maxDetailEntries">The maximum number of detail entries to retrieve.</param>
         public void GetEntries(ELeaderboardDataRequest request, int start, int end, int maxDetailEntries)
         {
             if (_mInspector.Data.IsValid)
@@ -86,6 +110,10 @@ namespace Heathen.SteamworksIntegration
             });
         }
 
+        /// <summary>
+        /// Clears existing entries and displays the provided entries.
+        /// </summary>
+        /// <param name="entries">The entries to display.</param>
         public void Display(LeaderboardEntry[] entries)
         {
             foreach (var go in _createdEntries)

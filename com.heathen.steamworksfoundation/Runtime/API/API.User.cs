@@ -149,9 +149,12 @@ namespace Heathen.SteamworksIntegration.API
             /// <returns>The level of the badge, 0 if they don't have it.</returns>
             public static int GetGameBadgeLevel(int series, bool foil) => SteamUser.GetGameBadgeLevel(series, foil);
             /// <summary>
-            /// Requests a URL which authenticates an in-game browser for store check-out and then redirects to the specified URL. As long as the in-game browser accepts and handles session cookies, Steam microtransaction checkout pages will automatically recognise the user instead of presenting a login page.
+            /// Requests a URL which authenticates an in-game browser for store check-out and then redirects to the specified URL. 
             /// </summary>
             /// <remarks>
+            /// <para>
+            /// As long as the in-game browser accepts and handles session cookies, Steam microtransaction checkout pages will automatically recognise the user instead of presenting a login page.
+            /// </para>
             /// <para>
             /// NOTE: The URL has a very short lifetime to prevent history-snooping attacks, so you should only call this API when you are about to launch the browser, or else immediately navigate to the result URL using a hidden browser window.
             /// </para>
@@ -159,8 +162,8 @@ namespace Heathen.SteamworksIntegration.API
             /// NOTE: The resulting authorisation cookie has an expiration time of one day, so it would be a good idea to request and visit a new auth URL every 12 hours.
             /// </para>
             /// </remarks>
-            /// <param name="redirectUrl"></param>
-            /// <param name="callback">Invoked by Steam when the request is resolved</param>
+            /// <param name="redirectUrl">The URL to redirect to after successful authorisation.</param>
+            /// <param name="callback">Invoked by Steam when the request is resolved.</param>
             public static void RequestStoreAuthURL(string redirectUrl, Action<StoreAuthURLResponse_t, bool> callback)
             {
                 if (callback == null)

@@ -30,6 +30,9 @@ namespace Heathen.SteamworksIntegration
         private SteamUserData  _userData;
         private LeaderboardEntry _entry;
 
+        /// <summary>
+        /// Gets or sets the leaderboard entry to display.
+        /// </summary>
         public LeaderboardEntry Entry
         {
             get => _entry;

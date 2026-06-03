@@ -19,12 +19,17 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Displays the Steam level of the tracked user in a TMP label.</summary>
+    /// <summary>
+    /// Displays the Steam level of the tracked user in a TMP label.
+    /// </summary>
     [ModularComponent(typeof(SteamUserData), "Levels", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
     public class SteamUserLevel : MonoBehaviour
     {
+        /// <summary>
+        /// The TextMeshPro label to display the user's level in.
+        /// </summary>
         public TMPro.TextMeshProUGUI label;
 
         private SteamUserData _mUserData;

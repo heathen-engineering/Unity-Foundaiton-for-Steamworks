@@ -87,21 +87,41 @@ namespace Heathen.SteamworksIntegration
 
         #region Boilerplate
 
+        /// <summary>
+        /// Compares the current instance with another <see cref="AppData"/> object.
+        /// </summary>
+        /// <param name="other">An object to compare with this instance.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public readonly int CompareTo(AppData other)
         {
             return AppId.CompareTo(other.AppId);
         }
 
+        /// <summary>
+        /// Compares the current instance with an <see cref="AppId_t"/>.
+        /// </summary>
+        /// <param name="other">An object to compare with this instance.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public readonly int CompareTo(AppId_t other)
         {
             return AppId.CompareTo(other);
         }
 
+        /// <summary>
+        /// Compares the current instance with a game ID.
+        /// </summary>
+        /// <param name="other">An object to compare with this instance.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public readonly int CompareTo(ulong other)
         {
             return AppId.CompareTo(new CGameID(other).AppID());
         }
 
+        /// <summary>
+        /// Compares the current instance with an unsigned integer app ID.
+        /// </summary>
+        /// <param name="other">An object to compare with this instance.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public readonly int CompareTo(uint other)
         {
             return AppId.m_AppId.CompareTo(other);
@@ -149,19 +169,83 @@ namespace Heathen.SteamworksIntegration
             return AppId.GetHashCode();
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(AppData l, AppData r) => l.AppId == r.AppId;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(AppId_t l, AppData r) => l == r.AppId;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(AppData l, AppId_t r) => l.AppId == r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(AppData l, AppData r) => l.AppId != r.AppId;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(AppId_t l, AppData r) => l != r.AppId;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(AppData l, AppId_t r) => l.AppId != r;
 
+        /// <summary>
+        /// Implicit conversion from <see cref="CGameID"/>.
+        /// </summary>
+        /// <param name="id">The game ID.</param>
         public static implicit operator AppData(CGameID id) => new AppData { id = id.AppID().m_AppId };
+        /// <summary>
+        /// Implicit conversion to <see cref="uint"/>.
+        /// </summary>
+        /// <param name="c">The app data.</param>
         public static implicit operator uint(AppData c) => c.AppId.m_AppId;
+        /// <summary>
+        /// Implicit conversion from <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="id">The app ID as ulong.</param>
         public static implicit operator AppData(ulong id) => new AppData { id = new CGameID(id).AppID().m_AppId };
+        /// <summary>
+        /// Implicit conversion from <see cref="uint"/>.
+        /// </summary>
+        /// <param name="id">The app ID as uint.</param>
         public static implicit operator AppData(uint id) => new AppData { id = id };
+        /// <summary>
+        /// Implicit conversion to <see cref="AppId_t"/>.
+        /// </summary>
+        /// <param name="c">The app data.</param>
         public static implicit operator AppId_t(AppData c) => c.AppId;
+        /// <summary>
+        /// Implicit conversion from <see cref="AppId_t"/>.
+        /// </summary>
+        /// <param name="id">The app ID.</param>
         public static implicit operator AppData(AppId_t id) => new AppData { id = id.m_AppId };
+        /// <summary>
+        /// Implicit conversion from <see cref="GameData"/>.
+        /// </summary>
+        /// <param name="id">The game data.</param>
         public static implicit operator AppData(GameData id) => new AppData { id = id.App.Id };
         #endregion
     }

@@ -21,12 +21,21 @@ using UnityEngine.Serialization;
 
 namespace Heathen.SteamworksIntegration
 {
+    /// <summary>
+    /// Represents a Steam user component.
+    /// </summary>
     [AddComponentMenu("Steamworks/User")]
     [DisallowMultipleComponent]
     public class SteamUserData : MonoBehaviour, ISteamUserData
     {
+        /// <summary>
+        /// Should this component automatically target the local user?
+        /// </summary>
         public bool localUser = false;
 
+        /// <summary>
+        /// Gets or sets the user data.
+        /// </summary>
         public UserData Data
         {
             get => _mData;
@@ -37,6 +46,9 @@ namespace Heathen.SteamworksIntegration
             }
         }
 
+        /// <summary>
+        /// Event invoked when the user's data or persona state changes.
+        /// </summary>
         [HideInInspector]
         public UnityEvent<UserData, EPersonaChange> onChanged;
 

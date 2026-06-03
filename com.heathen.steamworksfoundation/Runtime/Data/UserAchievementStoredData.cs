@@ -23,12 +23,20 @@ namespace Heathen.SteamworksIntegration
     [Serializable]
     public struct UserAchievementStoredData
     {
+        /// <summary>The game associated with the achievement.</summary>
         public GameData game;
+        /// <summary>Indicates if it is a group achievement.</summary>
         public bool groupAchievement;
+        /// <summary>The API name of the achievement.</summary>
         public string achievementName;
+        /// <summary>The current progress toward unlocking the achievement.</summary>
         public uint currentProgress;
+        /// <summary>The maximum progress required to unlock the achievement.</summary>
         public uint maxProgress;
 
+        /// <summary>
+        /// Initialises a new instance of the struct.
+        /// </summary>
         public UserAchievementStoredData(GameData game, bool groupAchievement, string achievementName, uint currentProgress, uint maxProgress)
         {
             this.game = game;
@@ -38,6 +46,9 @@ namespace Heathen.SteamworksIntegration
             this.maxProgress = maxProgress;
         }
 
+        /// <summary>
+        /// Initialises a new instance of the struct from native Steamworks data.
+        /// </summary>
         public UserAchievementStoredData(UserAchievementStored_t data)
         {
             game = data.m_nGameID;
@@ -47,6 +58,10 @@ namespace Heathen.SteamworksIntegration
             maxProgress = data.m_nMaxProgress;
         }
 
+        /// <summary>
+        /// Implicit conversion from native <see cref="UserAchievementStored_t"/>.
+        /// </summary>
+        /// <param name="data">The native data.</param>
         public static implicit operator UserAchievementStoredData(UserAchievementStored_t data) => new(data);
     }
 }

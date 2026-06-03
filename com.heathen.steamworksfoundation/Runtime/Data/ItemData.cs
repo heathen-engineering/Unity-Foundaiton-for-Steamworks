@@ -81,16 +81,68 @@ namespace Heathen.SteamworksIntegration
             return id.GetHashCode();
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(ItemData l, ItemData r) => l.id == r.id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(ItemData l, int r) => l.id == r;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(ItemData l, SteamItemDef_t r) => l.id == r.m_SteamItemDef;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(ItemData l, ItemData r) => l.id != r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(ItemData l, int r) => l.id != r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(ItemData l, SteamItemDef_t r) => l.id != r.m_SteamItemDef;
 
+        /// <summary>
+        /// Implicit conversion to <see cref="int"/>.
+        /// </summary>
+        /// <param name="c">The item data.</param>
         public static implicit operator int(ItemData c) => c.id;
+        /// <summary>
+        /// Implicit conversion from <see cref="int"/>.
+        /// </summary>
+        /// <param name="id">The item ID.</param>
         public static implicit operator ItemData(int id) => new ItemData { id = id };
+        /// <summary>
+        /// Implicit conversion to <see cref="SteamItemDef_t"/>.
+        /// </summary>
+        /// <param name="c">The item data.</param>
         public static implicit operator SteamItemDef_t(ItemData c) => new SteamItemDef_t(c.id);
+        /// <summary>
+        /// Implicit conversion from <see cref="SteamItemDef_t"/>.
+        /// </summary>
+        /// <param name="id">The item definition.</param>
         public static implicit operator ItemData(SteamItemDef_t id) => new ItemData { id = id.m_SteamItemDef };
         #endregion
     }

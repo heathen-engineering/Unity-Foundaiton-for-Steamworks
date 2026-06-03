@@ -45,7 +45,15 @@ namespace Heathen.SteamworksIntegration
         /// <summary>The Steam ID of the lobby the friend is in, if any.</summary>
         public readonly CSteamID LobbyId => Data.m_steamIDLobby;
 
+        /// <summary>
+        /// Implicit conversion from native <see cref="FriendGameInfo_t"/>.
+        /// </summary>
+        /// <param name="native">Native Steamworks data.</param>
         public static implicit operator FriendGameInfo(FriendGameInfo_t native) => new() { Data = native };
+        /// <summary>
+        /// Implicit conversion to native <see cref="FriendGameInfo_t"/>.
+        /// </summary>
+        /// <param name="heathen">Heathen wrapper data.</param>
         public static implicit operator FriendGameInfo_t(FriendGameInfo heathen) => heathen.Data;
     }
 }

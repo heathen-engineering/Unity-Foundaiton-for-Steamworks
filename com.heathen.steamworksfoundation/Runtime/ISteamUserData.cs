@@ -15,8 +15,12 @@
 #if !DISABLESTEAMWORKS && STEAM_INSTALLED
 namespace Heathen.SteamworksIntegration
 {
+    /// <summary>
+    /// Common interface for components that hold or reference <see cref="UserData"/>.
+    /// </summary>
     public interface ISteamUserData
     {
+        /// <summary>Gets or sets the user data.</summary>
         public UserData Data { get; set; }
     }
 }

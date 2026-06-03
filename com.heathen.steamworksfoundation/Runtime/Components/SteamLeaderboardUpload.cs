@@ -18,16 +18,24 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Uploads a score to the tracked leaderboard with the configured mode and details.</summary>
+    /// <summary>
+    /// Uploads a score to the tracked leaderboard with the configured mode and details.
+    /// </summary>
     [ModularComponent(typeof(SteamLeaderboardData), "Upload", "")]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
     public class SteamLeaderboardUpload : MonoBehaviour
     {
+        /// <summary>
+        /// Specifies the upload mode for the leaderboard score.
+        /// </summary>
         public enum Mode { KeepBest, ForceUpdate }
 
+        /// <summary>The upload mode to use.</summary>
         public Mode       mode    = Mode.KeepBest;
+        /// <summary>The score value to upload.</summary>
         public int        score   = 0;
+        /// <summary>Additional detail values to upload with the score.</summary>
         public List<int>  details = new();
 
         private SteamLeaderboardData _mInspector;
@@ -37,6 +45,9 @@ namespace Heathen.SteamworksIntegration
             _mInspector = GetComponent<SteamLeaderboardData>();
         }
 
+        /// <summary>
+        /// Performs the score upload using current settings.
+        /// </summary>
         public void Upload()
         {
             if (!_mInspector.Data.IsValid) return;
@@ -47,12 +58,20 @@ namespace Heathen.SteamworksIntegration
                 _mInspector.Data.UploadScoreForceUpdate(score, details.ToArray());
         }
 
+        /// <summary>
+        /// Sets the score and performs the upload.
+        /// </summary>
+        /// <param name="value">The score to upload.</param>
         public void UploadScore(int value)
         {
             score = value;
             Upload();
         }
 
+        /// <summary>
+        /// Parses the string value into an integer score and performs the upload.
+        /// </summary>
+        /// <param name="value">The score as a string.</param>
         public void UploadScore(string value)
         {
             if (int.TryParse(value, out int parsed)) UploadScore(parsed);

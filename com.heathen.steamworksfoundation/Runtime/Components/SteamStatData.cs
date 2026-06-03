@@ -19,28 +19,54 @@ using UnityEngine.Serialization;
 
 namespace Heathen.SteamworksIntegration
 {
+    /// <summary>
+    /// Represents a Steam stat component.
+    /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Steamworks/Stat")]
     [HelpURL("https://kb.heathen.group/steamworks/features/stats")]
     public class SteamStatData : MonoBehaviour
     {
-        /// <summary>The API name of the stat as defined in the Steamworks portal.</summary>
+        /// <summary>
+        /// The API name of the stat as defined in the Steamworks portal.
+        /// </summary>
         public string apiName;
 
         [FormerlySerializedAs("m_Delegates")] [SerializeField]
         private List<string> mDelegates;
 
-        /// <summary>Gets or sets the stat using its API name.</summary>
+        /// <summary>
+        /// Gets or sets the stat data using its API name.
+        /// </summary>
         public StatData Data
         {
             get => apiName;
             set => apiName = value.ApiName;
         }
 
+        /// <summary>
+        /// Gets the integer value of the stat for the local user.
+        /// </summary>
+        /// <returns>The stat value.</returns>
         public int  IntValue()            => Data.IntValue();
+        /// <summary>
+        /// Gets the floating-point value of the stat for the local user.
+        /// </summary>
+        /// <returns>The stat value.</returns>
         public float FloatValue()         => Data.FloatValue();
+        /// <summary>
+        /// Sets the integer value of the stat for the local user.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
         public void SetInt(int value)     => Data.Set(value);
+        /// <summary>
+        /// Sets the floating-point value of the stat for the local user.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
         public void SetFloat(float value) => Data.Set(value);
+        /// <summary>
+        /// Requests the Steam client to store current stats.
+        /// </summary>
         public void Store()               => Data.Store();
 
     }

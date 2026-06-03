@@ -69,6 +69,7 @@ namespace Heathen.SteamworksIntegration
         /// 1. The underlying <see cref="CSteamID"/> is not nil.
         /// 2. The account type of the associated <see cref="CSteamID"/> is an individual account.
         /// 3. The associated <see cref="CSteamID"/> belongs to the public Steam universe.
+        /// 4. The account ID is non-zero (0 is reserved and never assigned to a real user).
         /// </remarks>
         /// <returns>
         /// Returns <c>true</c> if the current <see cref="UserData"/> instance is valid; otherwise, <c>false</c>.
@@ -79,7 +80,8 @@ namespace Heathen.SteamworksIntegration
             {
                 if (id == CSteamID.Nil
                     || id.GetEAccountType() != EAccountType.k_EAccountTypeIndividual
-                    || id.GetEUniverse() != EUniverse.k_EUniversePublic)
+                    || id.GetEUniverse() != EUniverse.k_EUniversePublic
+                    || id.GetAccountID().m_AccountID == 0)
                     return false;
                 else
                     return true;
@@ -363,16 +365,31 @@ namespace Heathen.SteamworksIntegration
 
         #region Boilerplate
 
+        /// <summary>
+        /// Compares the current instance with another <see cref="UserData"/>.
+        /// </summary>
+        /// <param name="other">The other user data to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(UserData other)
         {
             return id.CompareTo(other.id);
         }
 
+        /// <summary>
+        /// Compares the current instance with a <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="other">The other ID to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(CSteamID other)
         {
             return id.CompareTo(other);
         }
 
+        /// <summary>
+        /// Compares the current instance with a 64-bit Steam ID.
+        /// </summary>
+        /// <param name="other">The other ID to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(ulong other)
         {
             return id.m_SteamID.CompareTo(other);
@@ -408,16 +425,68 @@ namespace Heathen.SteamworksIntegration
             return id.GetHashCode();
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(UserData l, UserData r) => l.id == r.id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(CSteamID l, UserData r) => l == r.id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(UserData l, CSteamID r) => l.id == r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(UserData l, UserData r) => l.id != r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(CSteamID l, UserData r) => l != r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(UserData l, CSteamID r) => l.id != r;
 
+        /// <summary>
+        /// Implicit conversion to <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="c">The user data.</param>
         public static implicit operator ulong(UserData c) => c.id.m_SteamID;
+        /// <summary>
+        /// Implicit conversion from <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="id">The Steam ID as ulong.</param>
         public static implicit operator UserData(ulong id) => new() { id = new CSteamID(id) };
+        /// <summary>
+        /// Implicit conversion to <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="c">The user data.</param>
         public static implicit operator CSteamID(UserData c) => c.id;
+        /// <summary>
+        /// Implicit conversion from <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="id">The Steam ID.</param>
         public static implicit operator UserData(CSteamID id) => new() { id = id };
     #endregion
     }

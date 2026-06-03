@@ -37,23 +37,49 @@ namespace Heathen.SteamworksIntegration
         /// </summary>
         public static LobbyMemberData Get(LobbyData lobby, UserData user) => new LobbyMemberData() { lobby = lobby, user = user };
 
+        /// <summary>
+        /// Compares the current instance with another <see cref="LobbyMemberData"/>.
+        /// </summary>
+        /// <param name="other">The other member to compare to.</param>
+        /// <returns>True if they represent the same user in the same lobby.</returns>
         public readonly bool Equals(LobbyMemberData other)
         {
             return other.lobby == lobby && other.user == user;
         }
 
+        /// <summary>
+        /// Compares the current instance with an object.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>True if they are equal.</returns>
         public override bool Equals(object obj)
         {
-            if (obj.GetType() != typeof(LobbyMemberData)) return false;
+            if (obj == null || obj.GetType() != typeof(LobbyMemberData)) return false;
             else return Equals((LobbyMemberData)obj);
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code value.</returns>
         public override int GetHashCode()
         {
             return HashCode.Combine(lobby, user);
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(LobbyMemberData l, LobbyMemberData r) => l.lobby == r.lobby && l.user == r.user;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(LobbyMemberData l, LobbyMemberData r) => l.lobby != r.lobby || l.user != r.user;
     }
 }

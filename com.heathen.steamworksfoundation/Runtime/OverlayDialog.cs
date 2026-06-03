@@ -17,16 +17,25 @@ using System;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Named overlays that can be opened via <see cref="API.Overlay.Client.Activate(OverlayDialog)"/>.</summary>
+    /// <summary>
+    /// Named overlays that can be opened via <see cref="API.Overlay.Client.Activate(OverlayDialog)"/>.
+    /// </summary>
     [Serializable]
     public enum OverlayDialog
     {
+        /// <summary>Opens the friends dialogue.</summary>
         Friends,
+        /// <summary>Opens the community dialogue.</summary>
         Community,
+        /// <summary>Opens the players dialogue.</summary>
         Players,
+        /// <summary>Opens the settings dialogue.</summary>
         Settings,
+        /// <summary>Opens the official game group dialogue.</summary>
         Officalgamegroup,
+        /// <summary>Opens the stats dialogue.</summary>
         Stats,
+        /// <summary>Opens the achievements dialogue.</summary>
         Achievements,
     }
 }

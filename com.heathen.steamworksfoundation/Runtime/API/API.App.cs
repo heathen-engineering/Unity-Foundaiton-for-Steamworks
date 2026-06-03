@@ -36,7 +36,7 @@ namespace Heathen.SteamworksIntegration.API
     {
         #region Global
         /// <summary>
-        /// Used by Unity Editor to reinitialise the domain
+        /// Used by Unity Editor to reinitialise the domain.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RunTimeInit()
@@ -81,15 +81,28 @@ namespace Heathen.SteamworksIntegration.API
 
         /// <summary>
         /// Delegate invoked by <see cref="App.Client.Initialise(AppData,InputActionData[])"/> when input actions are provided.
-        /// Toolkit registers its Input.Client.Init logic here; Foundation never references Input directly.
         /// </summary>
+        /// <remarks>
+        /// Toolkit registers its Input.Client.Init logic here; Foundation never references Input directly.
+        /// </remarks>
         public static Action<InputActionData[]> InputInitHandler;
 
-        /// <summary>Registers a handler to be called each Steam callback tick (after SteamAPI.RunCallbacks).</summary>
+        /// <summary>
+        /// Registers a handler to be called each Steam callback tick (after SteamAPI.RunCallbacks).
+        /// </summary>
+        /// <param name="handler">The action to be executed during the tick.</param>
         public static void RegisterTickHandler(Action handler)     => _tickHandlers.Add(handler);
-        /// <summary>Registers a handler to be called when the application is quitting (before SteamAPI.Shutdown).</summary>
+
+        /// <summary>
+        /// Registers a handler to be called when the application is quitting (before SteamAPI.Shutdown).
+        /// </summary>
+        /// <param name="handler">The action to be executed on shutdown.</param>
         public static void RegisterShutdownHandler(Action handler) => _shutdownHandlers.Add(handler);
-        /// <summary>Registers a handler to be called during Unload to release resources.</summary>
+
+        /// <summary>
+        /// Registers a handler to be called during Unload to release resources.
+        /// </summary>
+        /// <param name="handler">The action to be executed on unload.</param>
         public static void RegisterUnloadHandler(Action handler)   => _unloadHandlers.Add(handler);
 
         private static void Application_quitting()
@@ -475,7 +488,7 @@ namespace Heathen.SteamworksIntegration.API
                 }
             }
             /// <summary>
-            /// Checks whether the current App ID is for Cybercafés.
+            /// Checks whether the current App ID is for Cybercafes.
             /// </summary>
             public static bool IsCybercafe => SteamApps.BIsCybercafe();
             /// <summary>
@@ -502,8 +515,13 @@ namespace Heathen.SteamworksIntegration.API
             /// </summary>
             public static int DlcCount => SteamApps.GetDLCCount();
             /// <summary>
-            /// Gets the command line if the game was launched via Steam URL, e.g. steam://run/&lt;appid&gt;//&lt;command line&gt;/. This method is preferable to launching with a command line via the operating system, which can be a security risk. In order for rich presence joins to go through this and not be placed on the OS command line, you must enable "Use launch command line" from the Installation &gt; General page on your app.
+            /// Gets the command line if the game was launched via Steam URL, e.g. steam://run/&lt;appid&gt;//&lt;command line&gt;/. 
             /// </summary>
+            /// <remarks>
+            /// This method is preferable to launching with a command line via the operating system, which can be a security risk. 
+            /// In order for rich presence joins to go through this and not be placed on the OS command line, you must enable 
+            /// "Use launch command line" from the Installation &gt; General page on your app.
+            /// </remarks>
             public static string LaunchCommandLine
             {
                 get
@@ -520,40 +538,40 @@ namespace Heathen.SteamworksIntegration.API
             /// </summary>
             /// <remarks>
             /// The app may not actually be owned by the current user, they may have it left over from a free weekend, etc.
-            /// This only works for base applications, not Downloadable Content(DLC). Use IsDlcInstalled for DLC instead.
+            /// This only works for base applications, not Downloadable Content (DLC). Use <see cref="IsDlcInstalled"/> for DLC instead.
             /// </remarks>
-            /// <param name="appId">The app to check for</param>
-            /// <returns>True if the app is installed</returns>
+            /// <param name="appId">The app to check for.</param>
+            /// <returns>True if the app is installed.</returns>
             public static bool IsAppInstalled(AppData appId) => SteamApps.BIsAppInstalled(appId);
             /// <summary>
-            /// Checks if the user owns a specific DLC and if the DLC is installed
+            /// Checks if the user owns a specific DLC and if the DLC is installed.
             /// </summary>
             /// <param name="appId">The App ID of the DLC to check.</param>
-            /// <returns>True if installed</returns>
+            /// <returns>True if the DLC is installed.</returns>
             public static bool IsDlcInstalled(AppData appId) => SteamApps.BIsDlcInstalled(appId);
             /// <summary>
             /// Gets the download progress for optional DLC.
             /// </summary>
-            /// <param name="appId"></param>
-            /// <param name="bytesDownloaded"></param>
-            /// <param name="bytesTotal"></param>
-            /// <returns></returns>
+            /// <param name="appId">The App ID of the DLC.</param>
+            /// <param name="bytesDownloaded">The number of bytes already downloaded.</param>
+            /// <param name="bytesTotal">The total number of bytes to download.</param>
+            /// <returns>True if the operation succeeded.</returns>
             public static bool GetDlcDownloadProgress(AppData appId, out ulong bytesDownloaded, out ulong bytesTotal) => SteamApps.GetDlcDownloadProgress(appId, out bytesDownloaded, out bytesTotal);
             /// <summary>
-            /// Gets the installation directory of the app if any
+            /// Gets the installation directory of the app if any.
             /// </summary>
-            /// <param name="appId"></param>
-            /// <returns></returns>
+            /// <param name="appId">The App ID of the app.</param>
+            /// <returns>The path to the installation directory.</returns>
             public static string GetAppInstallDirectory(AppData appId)
             {
                 SteamApps.GetAppInstallDir(appId, out string folder, 2048);
                 return folder;
             }
             /// <summary>
-            /// Returns the collection of installed depots in mount order
+            /// Returns the collection of installed depots in mount order.
             /// </summary>
-            /// <param name="appId"></param>
-            /// <returns></returns>
+            /// <param name="appId">The App ID of the app.</param>
+            /// <returns>An array of <see cref="DepotId_t"/> containing the installed depots.</returns>
             public static DepotId_t[] InstalledDepots(AppData appId)
             {
                 var results = new DepotId_t[256];
@@ -562,45 +580,50 @@ namespace Heathen.SteamworksIntegration.API
                 return results;
             }
             /// <summary>
-            /// Parameter names starting with the character '@' are reserved for internal use and will always return an empty string. Parameter names starting with an underscore '_' are reserved for steam features -- they can be queried by the game, but it is advised that you not param names beginning with an underscore for your own features.
+            /// Queries a launch parameter from the Steam URL.
             /// </summary>
-            /// <param name="key"></param>
-            /// <returns></returns>
+            /// <remarks>
+            /// Parameter names starting with the character '@' are reserved for internal use and will always return an empty string. 
+            /// Parameter names starting with an underscore '_' are reserved for Steam features -- they can be queried by the game, 
+            /// but it is advised that you do not use parameter names beginning with an underscore for your own features.
+            /// </remarks>
+            /// <param name="key">The key of the parameter to query.</param>
+            /// <returns>The value of the parameter if found, otherwise an empty string.</returns>
             public static string QueryLaunchParam(string key) => SteamApps.GetLaunchQueryParam(key);
             /// <summary>
-            /// Install an optional DLC
+            /// Install an optional DLC.
             /// </summary>
-            /// <param name="appId"></param>
+            /// <param name="appId">The App ID of the DLC to install.</param>
             public static void InstallDlc(AppData appId) => SteamApps.InstallDLC(appId);
             /// <summary>
-            /// Uninstall an optional DLC
+            /// Uninstall an optional DLC.
             /// </summary>
-            /// <param name="appId"></param>
+            /// <param name="appId">The App ID of the DLC to uninstall.</param>
             public static void UninstallDlc(AppData appId) => SteamApps.UninstallDLC(appId);
             /// <summary>
-            /// Checks if the active user is subscribed to a specified appId.
+            /// Checks if the active user is subscribed to a specified App ID.
             /// </summary>
-            /// <param name="appId"></param>
-            /// <returns></returns>
+            /// <param name="appId">The App ID to check.</param>
+            /// <returns>True if the user is subscribed.</returns>
             public static bool IsSubscribedApp(AppData appId) => SteamApps.BIsSubscribedApp(appId);
             /// <summary>
-            /// Checks if the active user is subscribed to a timed trial of the app
+            /// Checks if the active user is subscribed to a timed trial of the app.
             /// </summary>
-            /// <param name="secondsAllowed">Total seconds allowed playing</param>
-            /// <param name="secondsPlayed">Total seconds that have been played</param>
-            /// <returns></returns>
+            /// <param name="secondsAllowed">Total seconds allowed playing.</param>
+            /// <param name="secondsPlayed">Total seconds that have been played.</param>
+            /// <returns>True if the user is on a timed trial.</returns>
             public static bool IsTimedTrial(out uint secondsAllowed, out uint secondsPlayed) => SteamApps.BIsTimedTrial(out secondsAllowed, out secondsPlayed);
             /// <summary>
-            /// Gets the current beta branch name if any
+            /// Gets the current beta branch name if any.
             /// </summary>
-            /// <param name="name">outputs the name of the current beta branch, if any</param>
-            /// <returns>True if the user is running from a beta branch</returns>
+            /// <param name="name">Outputs the name of the current beta branch, if any.</param>
+            /// <returns>True if the user is running from a beta branch.</returns>
             public static bool GetCurrentBetaName(out string name) => SteamApps.GetCurrentBetaName(out name, 512);
             /// <summary>
-            /// Gets the time of purchase of the specified app
+            /// Gets the time of purchase of the specified app.
             /// </summary>
-            /// <param name="appId"></param>
-            /// <returns></returns>
+            /// <param name="appId">The App ID of the app.</param>
+            /// <returns>A <see cref="DateTime"/> representing the earliest purchase time.</returns>
             public static DateTime GetEarliestPurchaseTime(AppData appId)
             {
                 var secondsSince1970 = SteamApps.GetEarliestPurchaseUnixTime(appId);
@@ -609,8 +632,8 @@ namespace Heathen.SteamworksIntegration.API
             /// <summary>
             /// Asynchronously retrieves metadata details about a specific file in the depot manifest.
             /// </summary>
-            /// <param name="name"></param>
-            /// <param name="callback"></param>
+            /// <param name="name">The name of the file.</param>
+            /// <param name="callback">A callback to be invoked with the results.</param>
             public static void GetFileDetails(string name, Action<FileDetailsResult, bool> callback)
             {
                 if (callback == null)
@@ -622,10 +645,14 @@ namespace Heathen.SteamworksIntegration.API
                 _mFileDetailResultT.Set(handle, (r,e) => { callback.Invoke(r, e); });
             }
             /// <summary>
-            /// If you detect the game is out-of-date (for example, by having the client detect a version mismatch with a server), you can call use MarkContentCorrupt to force a verify operation, show a message to the user, and then quit.
+            /// Mark content as corrupt to force a verify operation.
             /// </summary>
-            /// <param name="missingFilesOnly"></param>
-            /// <returns></returns>
+            /// <remarks>
+            /// If you detect the game is out-of-date (for example, by having the client detect a version mismatch with a server), 
+            /// you can call use MarkContentCorrupt to force a verify operation, show a message to the user, and then quit.
+            /// </remarks>
+            /// <param name="missingFilesOnly">If true, only missing files will be verified.</param>
+            /// <returns>True if the operation succeeded.</returns>
             public static bool MarkContentCorrupt(bool missingFilesOnly) => SteamApps.MarkContentCorrupt(missingFilesOnly);
 
         }
@@ -679,16 +706,16 @@ namespace Heathen.SteamworksIntegration.API
                     Debug.LogError("Steamworks.GameServer.LogOn reported connection Failure: " + result.ToString());
             }
             /// <summary>
-            /// Initialise the Steam Game Server API with the provided configuration settings
+            /// Initialise the Steam Game Server API with the provided configuration settings.
             /// </summary>
-            /// <param name="appId">The App to initialize as</param>
-            /// <param name="serverConfiguration">The configuration settings to apply</param>
+            /// <param name="appId">The App ID to initialise as.</param>
+            /// <param name="serverConfiguration">The configuration settings to apply.</param>
             public static void Initialise(AppData appId, SteamGameServerConfiguration serverConfiguration)
             {
                 if (Initialised)
                 {
                     HasInitialisationError = true;
-                    InitialisationErrorMessage = "Tried to initialize the Steamworks API twice in one session, operation aborted!";
+                    InitialisationErrorMessage = "Tried to initialise the Steamworks API twice in one session, operation aborted!";
                     SteamTools.Events.InvokeOnSteamInitialisationError(InitialisationErrorMessage);
                     Debug.LogWarning(InitialisationErrorMessage);
                 }
@@ -735,14 +762,14 @@ namespace Heathen.SteamworksIntegration.API
 #endif
 
                     if (IsDebugging)
-                        Debug.Log("Initializing Steam Game Server API: (" + serverConfiguration.ip + ", " + serverConfiguration.gamePort.ToString() + ", " + serverConfiguration.queryPort.ToString() + ", " + eMode.ToString() + ", " + serverConfiguration.serverVersion + ")");
+                        Debug.Log("Initialising Steam Game Server API: (" + serverConfiguration.ip + ", " + serverConfiguration.gamePort.ToString() + ", " + serverConfiguration.queryPort.ToString() + ", " + eMode.ToString() + ", " + serverConfiguration.serverVersion + ")");
 
                     Initialised = GameServer.Init(serverConfiguration.ip, serverConfiguration.gamePort, serverConfiguration.queryPort, eMode, serverConfiguration.serverVersion);
 
                     if (!Initialised)
                     {
                         HasInitialisationError = true;
-                        InitialisationErrorMessage = "Steam API failed to initialize!\nOne of the following issues must be true:\n"
+                        InitialisationErrorMessage = "Steam API failed to initialise!\nOne of the following issues must be true:\n"
                                 + "- The Steam couldn't determine the App ID of the game. If you're running your server from the executable or debugger directly then you must have a steam_appid.txt in your server directory next to the executable, with your app ID in it and nothing else. Steam will look for this file in the current working directory. If you are running your executable from a different directory you may need to relocate the steam_appid.txt file.\n"
                                 + "- The Game port and or Query port could not be bound.\n"
                                 + "- The App ID is not completely set up, i.e. in Release State: Unavailable, or it's missing default packages.";
@@ -827,9 +854,9 @@ namespace Heathen.SteamworksIntegration.API
                     else
                     {
                         HasInitialisationError = true;
-                        InitialisationErrorMessage = "Steam Initialization failed, check the log for more information.";
+                        InitialisationErrorMessage = "Steam Initialisation failed, check the log for more information.";
                         SteamTools.Events.InvokeOnSteamInitialisationError(InitialisationErrorMessage);
-                        Debug.LogError("[Steamworks.NET] Steam Initialization failed, check the log for more information");
+                        Debug.LogError("[Steamworks.NET] Steam Initialisation failed, check the log for more information");
                     }
                 }
             }
@@ -845,7 +872,7 @@ namespace Heathen.SteamworksIntegration.API
             }
 
             /// <summary>
-            /// Log the server on to the Steam Game Server API end points
+            /// Log the server on to the Steam Game Server API endpoints.
             /// </summary>
             public static void LogOn()
             {
@@ -877,7 +904,7 @@ namespace Heathen.SteamworksIntegration.API
                 Debug.Log("Steamworks Game Server Started.\nWaiting for connection result from Steamworks");
             }
             /// <summary>
-            /// Update server details on the Steam Game Server API
+            /// Update server details on the Steam Game Server API.
             /// </summary>
             public static void SendUpdatedServerDetailsToSteam()
             {
@@ -896,7 +923,7 @@ namespace Heathen.SteamworksIntegration.API
                 }
             }
             /// <summary>
-            /// Configures Steam Game Server API callbacks
+            /// Configures Steam Game Server API callbacks.
             /// </summary>
             public static void RegisterCallbacks()
             {

@@ -17,12 +17,17 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Displays the local user's rank on the tracked leaderboard in a TMP label.</summary>
+    /// <summary>
+    /// Displays the local user's rank on the tracked leaderboard in a TMP label.
+    /// </summary>
     [ModularComponent(typeof(SteamLeaderboardData), "Ranks", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
     public class SteamLeaderboardRank : MonoBehaviour
     {
+        /// <summary>
+        /// The TextMeshPro label to display the user's rank in.
+        /// </summary>
         public TMPro.TextMeshProUGUI label;
 
         private SteamLeaderboardData        _mInspector;

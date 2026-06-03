@@ -18,12 +18,17 @@ using UnityEngine.Events;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Fires a UnityEvent when the tracked achievement's unlock state changes.</summary>
+    /// <summary>
+    /// Fires a UnityEvent when the tracked achievement's unlock state changes.
+    /// </summary>
     [ModularEvents(typeof(SteamAchievementData))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamAchievementData))]
     public class SteamAchievementChanged : MonoBehaviour
     {
+        /// <summary>
+        /// Event invoked when the achievement's unlocked status changes.
+        /// </summary>
         [EventField]
         public UnityEvent<bool> onChanged;
 

@@ -19,53 +19,53 @@ using UnityEngine;
 namespace Heathen.SteamworksIntegration
 {
     /// <summary>
-    /// Represents a Steam Stat
+    /// Represents a Steam stat.
     /// </summary>
     [Serializable]
     public struct StatData : IEquatable<StatData>, IEquatable<string>, IComparable<StatData>, IComparable<string>
     {
         /// <summary>
-        /// The API Name as it appears in the Steamworks portal.
+        /// The API name as it appears in the Steamworks portal.
         /// </summary>
         [SerializeField]
         private string id;
         /// <summary>
-        /// The API Name as it appears in the Steamworks portal.
+        /// The API name as it appears in the Steamworks portal.
         /// </summary>
         public readonly string ApiName => id;
         /// <summary>
-        /// The float value of the stat
+        /// The float value of the stat.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The value of the stat.</returns>
         public readonly float FloatValue()
         {
             API.StatsAndAchievements.Client.GetStat(id, out float value);
             return value;
         }
         /// <summary>
-        /// The float value of the stat for the specified user
+        /// The float value of the stat for the specified user.
         /// </summary>
-        /// <param name="user">The user to get the stat for</param>
-        /// <returns></returns>
+        /// <param name="user">The user to get the stat for.</param>
+        /// <returns>The value of the stat.</returns>
         public readonly float FloatValue(UserData user)
         {
             API.StatsAndAchievements.Client.GetStat(user, id, out float value);
             return value;
         }
         /// <summary>
-        /// The int value of the stat
+        /// The int value of the stat.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The value of the stat.</returns>
         public readonly int IntValue()
         {
             API.StatsAndAchievements.Client.GetStat(id, out int value);
             return value;
         }
         /// <summary>
-        /// The int value of the stat for the specified user
+        /// The int value of the stat for the specified user.
         /// </summary>
-        /// <param name="user">The user to get the stat for</param>
-        /// <returns></returns>
+        /// <param name="user">The user to get the stat for.</param>
+        /// <returns>The value of the stat.</returns>
         public readonly int IntValue(UserData user)
         {
             API.StatsAndAchievements.Client.GetStat(user, id, out int value);
@@ -77,22 +77,22 @@ namespace Heathen.SteamworksIntegration
         /// <remarks>
         /// To keep from using too much memory, an least recently used cache (LRU) is maintained and other user's stats will occasionally be unloaded. When this happens a UserStatsUnloaded_t callback is sent. After receiving this callback the user's stats will be unavailable until this function is called again.
         /// </remarks>
-        /// <param name="user">The user to get stats for</param>
-        /// <param name="callback">A delegate of the form (<see cref="UserStatsReceived"/> results, <see cref="bool"/> ioError) that is invoked when the process is completed</param>
+        /// <param name="user">The user to get stats for.</param>
+        /// <param name="callback">A delegate of the form (<see cref="UserStatsReceived"/> results, <see cref="bool"/> ioError) that is invoked when the process is completed.</param>
         public readonly void RequestUserStats(UserData user, Action<UserStatsReceived, bool> callback) => API.StatsAndAchievements.Client.RequestUserStats(user, callback);
         /// <summary>
-        /// Get the value of the stat for the given user, this assumes <see cref="RequestUserStats(UserData, Action{UserStatsReceived, bool})"/> has already been called
+        /// Get the value of the stat for the given user, this assumes <see cref="RequestUserStats(UserData, Action{UserStatsReceived, bool})"/> has already been called.
         /// </summary>
-        /// <param name="user">The user to find the value for</param>
-        /// <param name="value">The value</param>
-        /// <returns>True if the request was accepted</returns>
+        /// <param name="user">The user to find the value for.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>True if the request was accepted.</returns>
         public readonly bool GetValue(UserData user, out int value) => API.StatsAndAchievements.Client.GetStat(user, this, out value);
         /// <summary>
-        /// Get the value of the stat for the given user, this assumes <see cref="RequestUserStats(UserData, Action{UserStatsReceived, bool})"/> has already been called
+        /// Get the value of the stat for the given user, this assumes <see cref="RequestUserStats(UserData, Action{UserStatsReceived, bool})"/> has already been called.
         /// </summary>
-        /// <param name="user">The user to find the value for</param>
-        /// <param name="value">The value</param>
-        /// <returns>True if the request was accepted</returns>
+        /// <param name="user">The user to find the value for.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>True if the request was accepted.</returns>
         public readonly bool GetValue(UserData user, out float value) => API.StatsAndAchievements.Client.GetStat(user, this, out value);
         /// <summary>
         /// The global aggregated long value of the stat. Requires <see cref="API.StatsAndAchievements.Client.RequestGlobalStats"/> to have completed first.
@@ -111,52 +111,59 @@ namespace Heathen.SteamworksIntegration
             return value;
         }
         /// <summary>
-        /// Set the value of the stat
-        /// <para>This sets the value in the local cash, and can be called as frequently as you like. When ready call <see cref="Store"/>, store should only be called periodically and is rate limited by Valve</para>
+        /// Set the value of the stat.
         /// </summary>
-        /// <param name="value">The value to set</param>
+        /// <remarks>
+        /// This sets the value in the local cache, and can be called as frequently as you like. When ready call <see cref="Store"/>, store should only be called periodically and is rate limited by Valve.
+        /// </remarks>
+        /// <param name="value">The value to set.</param>
         public readonly void Set(float value) => API.StatsAndAchievements.Client.SetStat(id, value);
         /// <summary>
-        /// Set the value of the stat
-        /// <para>This sets the value in the local cash, and can be called as frequently as you like. When ready call <see cref="Store"/>, store should only be called periodically and is rate limited by Valve</para>
+        /// Set the value of the stat.
         /// </summary>
-        /// <param name="value">The value to set</param>
+        /// <remarks>
+        /// This sets the value in the local cache, and can be called as frequently as you like. When ready call <see cref="Store"/>, store should only be called periodically and is rate limited by Valve.
+        /// </remarks>
+        /// <param name="value">The value to set.</param>
         public readonly void Set(int value) => API.StatsAndAchievements.Client.SetStat(id, value);
         /// <summary>
-        /// Set the value of the stat
-        /// <para>This sets the value in the local cash, and can be called as frequently as you like. When ready call <see cref="Store"/>, store should only be called periodically and is rate limited by Valve</para>
+        /// Set the value of the stat.
         /// </summary>
-        /// <param name="value">The value to set</param>
+        /// <remarks>
+        /// This sets the value in the local cache, and can be called as frequently as you like. When ready call <see cref="Store"/>, store should only be called periodically and is rate limited by Valve.
+        /// </remarks>
+        /// <param name="value">The value to set.</param>
+        /// <param name="length">The duration over which this rate was achieved.</param>
         public readonly void Set(float value, double length) => API.StatsAndAchievements.Client.UpdateAvgRateStat(id, value, length);
         /// <summary>
-        /// Store the value set to the Steam backend
+        /// Store the value set to the Steam backend.
         /// </summary>
         public readonly void Store() => API.StatsAndAchievements.Client.StoreStats();
         /// <summary>
-        /// Set the value of the stat on the server
+        /// Set the value of the stat on the server.
         /// </summary>
-        /// <param name="user">The user to set the value for</param>
-        /// <param name="value">The value to set</param>
+        /// <param name="user">The user to set the value for.</param>
+        /// <param name="value">The value to set.</param>
         public readonly void ServerSetValue(UserData user, int value) => API.StatsAndAchievements.Server.SetUserStat(user, this, value);
         /// <summary>
-        /// Set the value of the stat on the server
+        /// Set the value of the stat on the server.
         /// </summary>
-        /// <param name="user">The user to set the value for</param>
-        /// <param name="value">The value to set</param>
+        /// <param name="user">The user to set the value for.</param>
+        /// <param name="value">The value to set.</param>
         public readonly void ServerSetValue(UserData user, float value) => API.StatsAndAchievements.Server.SetUserStat(user, this, value);
         /// <summary>
-        /// Get the value of the stat on the server
+        /// Get the value of the stat on the server.
         /// </summary>
-        /// <param name="user">The user to get the value for</param>
-        /// <param name="value">The value</param>
-        /// <returns>True if successful</returns>
+        /// <param name="user">The user to get the value for.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>True if successful.</returns>
         public readonly bool ServerGetValue(UserData user, out int value) => API.StatsAndAchievements.Server.GetUserStat(user, this, out value);
         /// <summary>
-        /// Get the value of the stat on the server
+        /// Get the value of the stat on the server.
         /// </summary>
-        /// <param name="user">The user to get the value for</param>
-        /// <param name="value">The value</param>
-        /// <returns>True if successful</returns>
+        /// <param name="user">The user to get the value for.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>True if successful.</returns>
         public readonly bool ServerGetValue(UserData user, out float value) => API.StatsAndAchievements.Server.GetUserStat(user, this, out value);
 
         #region Boilerplate
@@ -185,46 +192,75 @@ namespace Heathen.SteamworksIntegration
             return id.GetHashCode();
         }
         /// <inheritdoc/>
+        /// <summary>
+        /// Compares the current instance with another <see cref="StatData"/>.
+        /// </summary>
+        /// <param name="other">The other stat data to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(StatData other)
         {
             return string.Compare(id, other.id, StringComparison.Ordinal);
         }
-        /// <inheritdoc/>
+        /// <summary>
+        /// Compares the current instance with a string API name.
+        /// </summary>
+        /// <param name="other">The API name to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public readonly int CompareTo(string other)
         {
             return string.Compare(id, other, StringComparison.Ordinal);
         }
         /// <summary>
-        /// Equality operator
+        /// Equality operator.
         /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(StatData l, StatData r) => l.id == r.id;
         /// <summary>
-        /// Equality operator
+        /// Equality operator.
         /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(string l, StatData r) => l == r.id;
         /// <summary>
-        /// Equality operator
+        /// Equality operator.
         /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(StatData l, string r) => l.id == r;
         /// <summary>
-        /// Inequality operator
+        /// Inequality operator.
         /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(StatData l, StatData r) => l.id != r.id;
         /// <summary>
-        /// Inequality operator
+        /// Inequality operator.
         /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(string l, StatData r) => l != r.id;
         /// <summary>
-        /// Inequality operator
+        /// Inequality operator.
         /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(StatData l, string r) => l.id != r;
         /// <summary>
-        /// Implicit string operator
+        /// Implicit conversion to string.
         /// </summary>
+        /// <param name="c">The stat data.</param>
         public static implicit operator string(StatData c) => string.IsNullOrEmpty(c.id) ? string.Empty : c.id;
         /// <summary>
-        /// Implicit StatData operator
+        /// Implicit conversion from string.
         /// </summary>
+        /// <param name="id">The API name.</param>
         public static implicit operator StatData(string id) => new() { id = id };
         #endregion
     }

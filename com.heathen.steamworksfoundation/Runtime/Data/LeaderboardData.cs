@@ -354,18 +354,82 @@ namespace Heathen.SteamworksIntegration
             return apiName.Equals(other);
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(LeaderboardData l, LeaderboardData r) => l.id == r.id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(LeaderboardData l, ulong r) => l.id.m_SteamLeaderboard == r;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(LeaderboardData l, string r) => l.apiName == r;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(LeaderboardData l, SteamLeaderboard_t r) => l.id == r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(LeaderboardData l, LeaderboardData r) => l.id != r.id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(LeaderboardData l, ulong r) => l.id.m_SteamLeaderboard != r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(LeaderboardData l, string r) => l.apiName != r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(LeaderboardData l, SteamLeaderboard_t r) => l.id != r;
 
+        /// <summary>
+        /// Implicit conversion to <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="c">The leaderboard data.</param>
         public static implicit operator ulong(LeaderboardData c) => c.id.m_SteamLeaderboard;
+        /// <summary>
+        /// Implicit conversion from <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="id">The leaderboard handle value.</param>
         public static implicit operator LeaderboardData(ulong id) => new LeaderboardData { id = new SteamLeaderboard_t(id), apiName = API.Leaderboards.Client.GetName(new SteamLeaderboard_t(id)) };
+        /// <summary>
+        /// Implicit conversion to <see cref="SteamLeaderboard_t"/>.
+        /// </summary>
+        /// <param name="c">The leaderboard data.</param>
         public static implicit operator SteamLeaderboard_t(LeaderboardData c) => c.id;
+        /// <summary>
+        /// Implicit conversion from <see cref="SteamLeaderboard_t"/>.
+        /// </summary>
+        /// <param name="id">The leaderboard handle.</param>
         public static implicit operator LeaderboardData(SteamLeaderboard_t id)
         {
             var name = SteamUserStats.GetLeaderboardName(id);
@@ -377,6 +441,10 @@ namespace Heathen.SteamworksIntegration
             Debug.LogWarning($"SteamLeaderboard_t ({id.m_SteamLeaderboard}) is not a known managed board and may not function correctly. Leaderboards should be found or created via SteamTools.Game.");
             return default;
         }
+        /// <summary>
+        /// Implicit conversion to <see cref="string"/>.
+        /// </summary>
+        /// <param name="c">The leaderboard data.</param>
         public static implicit operator string(LeaderboardData c) => c.apiName;
         #endregion
     }

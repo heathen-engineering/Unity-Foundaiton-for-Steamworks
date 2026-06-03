@@ -18,12 +18,17 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
-    /// <summary>Displays the Steam persona name of the tracked user in a TMP label.</summary>
+    /// <summary>
+    /// Displays the Steam persona name of the tracked user in a TMP label.
+    /// </summary>
     [ModularComponent(typeof(SteamUserData), "Names", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
     public class SteamUserName : MonoBehaviour
     {
+        /// <summary>
+        /// The TextMeshPro label to display the user's name in.
+        /// </summary>
         public TMPro.TextMeshProUGUI label;
 
         private SteamUserData _mUserData;

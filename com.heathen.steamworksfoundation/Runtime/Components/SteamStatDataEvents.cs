@@ -28,8 +28,10 @@ namespace Heathen.SteamworksIntegration
     [RequireComponent(typeof(SteamStatData))]
     public class SteamStatDataEvents : MonoBehaviour
     {
+        /// <summary>Event invoked when an integer stat's value changes.</summary>
         [EventField]
         public UnityEvent<int> onIntChanged;
+        /// <summary>Event invoked when a float stat's value changes.</summary>
         [EventField]
         public UnityEvent<float> onFloatChanged;
 

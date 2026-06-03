@@ -369,7 +369,7 @@ namespace Heathen.SteamworksIntegration.API
             /// Gets a leaderboard by name.
             /// </summary>
             /// <param name="leaderboardName">The name of the leaderboard to find. Must not be longer than <see cref="Constants.k_cchLeaderboardNameMax"/>.</param>
-            /// <param name="callback"></param>
+            /// <param name="callback">A callback invoked when the leaderboard is found or an error occurs.</param>
             public static void Find(string leaderboardName, Action<LeaderboardData, bool> callback)
             {
                 if (callback == null)
@@ -398,7 +398,7 @@ namespace Heathen.SteamworksIntegration.API
             /// <param name="leaderboardName">The name of the leaderboard to find. Must not be longer than <see cref="Constants.k_cchLeaderboardNameMax"/>.</param>
             /// <param name="sortingMethod">The sort order of the new leaderboard if it's created.</param>
             /// <param name="displayType">The display type (used by the Steam Community website) of the new leaderboard if it's created.</param>
-            /// <param name="callback"></param>
+            /// <param name="callback">A callback invoked when the leaderboard is found/created or an error occurs.</param>
             public static void FindOrCreate(string leaderboardName, ELeaderboardSortMethod sortingMethod, ELeaderboardDisplayType displayType, Action<LeaderboardData, bool> callback)
             {
                 if (callback == null)
@@ -437,26 +437,26 @@ namespace Heathen.SteamworksIntegration.API
             /// <summary>
             /// Returns the display type of the leaderboard handle.
             /// </summary>
-            /// <param name="leaderboard"></param>
-            /// <returns></returns>
+            /// <param name="leaderboard">The leaderboard data to query.</param>
+            /// <returns>The <see cref="ELeaderboardDisplayType"/> of the leaderboard.</returns>
             public static ELeaderboardDisplayType GetDisplayType(LeaderboardData leaderboard) => SteamUserStats.GetLeaderboardDisplayType(leaderboard);
             /// <summary>
             /// Returns the total number of entries in a leaderboard.
             /// </summary>
-            /// <param name="leaderboard"></param>
-            /// <returns></returns>
+            /// <param name="leaderboard">The leaderboard data to query.</param>
+            /// <returns>The number of entries.</returns>
             public static int GetEntryCount(LeaderboardData leaderboard) => SteamUserStats.GetLeaderboardEntryCount(leaderboard);
             /// <summary>
             /// Returns the name of a leaderboard handle.
             /// </summary>
-            /// <param name="leaderboard"></param>
-            /// <returns></returns>
+            /// <param name="leaderboard">The leaderboard data to query.</param>
+            /// <returns>The name of the leaderboard.</returns>
             public static string GetName(LeaderboardData leaderboard) => SteamUserStats.GetLeaderboardName(leaderboard);
             /// <summary>
             /// Returns the sort order of a leaderboard handle.
             /// </summary>
-            /// <param name="leaderboard"></param>
-            /// <returns></returns>
+            /// <param name="leaderboard">The leaderboard data to query.</param>
+            /// <returns>The <see cref="ELeaderboardSortMethod"/> of the leaderboard.</returns>
             public static ELeaderboardSortMethod GetSortMethod(LeaderboardData leaderboard) => SteamUserStats.GetLeaderboardSortMethod(leaderboard);
 
             /// <summary>

@@ -63,8 +63,9 @@ namespace Heathen.SteamworksIntegration
         /// <summary>
         /// Indicates whether the current lobby data represents a valid Steam lobby.
         /// This value is determined by checking if the underlying Steam ID is not
-        /// null, if it corresponds to a chat account type, and if it exists within
-        /// the public Steam universe. Returns <c>true</c> if all conditions are
+        /// null, if it corresponds to a chat account type, if it exists within
+        /// the public Steam universe, and if the account ID is non-zero (0 is reserved
+        /// and never assigned to a real lobby). Returns <c>true</c> if all conditions are
         /// satisfied; otherwise, returns <c>false</c>.
         /// </summary>
         public readonly bool IsValid
@@ -74,7 +75,8 @@ namespace Heathen.SteamworksIntegration
                 var sId = SteamId;
                 if (sId == CSteamID.Nil
                     || sId.GetEAccountType() != EAccountType.k_EAccountTypeChat
-                    || sId.GetEUniverse() != EUniverse.k_EUniversePublic)
+                    || sId.GetEUniverse() != EUniverse.k_EUniversePublic
+                    || sId.GetAccountID().m_AccountID == 0)
                     return false;
                 else
                     return true;
@@ -206,11 +208,21 @@ namespace Heathen.SteamworksIntegration
 
         #region Boilerplate
 
+        /// <summary>
+        /// Compares the current instance with a <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="other">The other ID to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public int CompareTo(CSteamID other)
         {
-            return _id.CompareTo(other);
+            return _id.CompareTo(other.m_SteamID);
         }
 
+        /// <summary>
+        /// Compares the current instance with a 64-bit Steam ID.
+        /// </summary>
+        /// <param name="other">The other ID to compare to.</param>
+        /// <returns>A value indicating the relative order of the objects being compared.</returns>
         public int CompareTo(ulong other)
         {
             return _id.CompareTo(other);
@@ -246,23 +258,111 @@ namespace Heathen.SteamworksIntegration
             return _id.Equals(other._id);
         }
 
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(LobbyData l, LobbyData r) => l._id == r._id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(CSteamID l, LobbyData r) => l.m_SteamID == r._id;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(LobbyData l, CSteamID r) => l._id == r.m_SteamID;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(LobbyData l, ulong r) => l._id == r;
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if equal.</returns>
         public static bool operator ==(ulong l, LobbyData r) => l == r._id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(LobbyData l, LobbyData r) => l._id != r._id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(CSteamID l, LobbyData r) => l.m_SteamID != r._id;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(LobbyData l, CSteamID r) => l._id != r.m_SteamID;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(LobbyData l, ulong r) => l._id != r;
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="l">Left operand.</param>
+        /// <param name="r">Right operand.</param>
+        /// <returns>True if not equal.</returns>
         public static bool operator !=(ulong l, LobbyData r) => l != r._id;
 
+        /// <summary>
+        /// Implicit conversion to <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="c">The lobby data.</param>
         public static implicit operator CSteamID(LobbyData c) => c.SteamId;
+        /// <summary>
+        /// Implicit conversion from <see cref="CSteamID"/>.
+        /// </summary>
+        /// <param name="id">The Steam ID.</param>
         public static implicit operator LobbyData(CSteamID id) => new LobbyData { _id = id.m_SteamID };
+        /// <summary>
+        /// Implicit conversion to <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="id">The lobby data.</param>
         public static implicit operator ulong(LobbyData id) => id._id;
+        /// <summary>
+        /// Implicit conversion from <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="id">The Steam ID as ulong.</param>
         public static implicit operator LobbyData(ulong id) => new LobbyData { _id = id };
+        /// <summary>
+        /// Implicit conversion from <see cref="AccountID_t"/>.
+        /// </summary>
+        /// <param name="id">The account ID.</param>
         public static implicit operator LobbyData(AccountID_t id) => Get(id);
+        /// <summary>
+        /// Implicit conversion from <see cref="uint"/>.
+        /// </summary>
+        /// <param name="id">The account ID as uint.</param>
         public static implicit operator LobbyData(uint id) => Get(id);
+        /// <summary>
+        /// Implicit conversion from hexadecimal string.
+        /// </summary>
+        /// <param name="id">The hexadecimal account ID.</param>
         public static implicit operator LobbyData(string id) => Get(id);
 
         #endregion

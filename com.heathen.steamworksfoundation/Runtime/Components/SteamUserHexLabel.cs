@@ -18,11 +18,17 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
+    /// <summary>
+    /// Displays the hex-formatted Steam ID of the tracked user in a TMP label.
+    /// </summary>
     [ModularComponent(typeof(SteamUserData), "Hex Labels", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
     public class SteamUserHexLabel : MonoBehaviour
     {
+        /// <summary>
+        /// The TextMeshPro label to display the user's hex ID in.
+        /// </summary>
         public TMPro.TextMeshProUGUI label;
 
         private SteamUserData _mSteamUserData;

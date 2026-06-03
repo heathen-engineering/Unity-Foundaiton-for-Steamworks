@@ -47,7 +47,7 @@ namespace Heathen.SteamworksIntegration
         /// </summary>
         [FormerlySerializedAs("autoInitialize")] public bool autoInitialise;
         /// <summary>
-        /// Should the system automatically log on to the Steam Game Server end point when the Steam Game Server has finished initialisation?
+        /// Should the system automatically log on to the Steam Game Server endpoint when the Steam Game Server has finished initialisation?
         /// Logon of the Steam Game Server is required for the server to be issued its ID and for the server to appear in the Steam Game Server Browser.
         /// </summary>
         public bool autoLogon;
@@ -293,11 +293,11 @@ namespace Heathen.SteamworksIntegration
         }
 
         /// <summary>
-        /// Read server configuration from byte[] representing the string serialised configuration
+        /// Read server configuration from byte array representing the string serialised configuration.
         /// </summary>
-        /// <param name="serialisedData"></param>
-        /// <param name="config"></param>
-        /// <returns></returns>
+        /// <param name="serializedData">The serialised configuration data.</param>
+        /// <param name="config">The resulting configuration.</param>
+        /// <returns>True if successful.</returns>
         public static bool Get(byte[] serializedData, out SteamGameServerConfiguration config)
         {
             try
@@ -322,15 +322,15 @@ namespace Heathen.SteamworksIntegration
         }
 
         /// <summary>
-        /// Returns the JSON formatted serialised form of the configuration, this can be written to disk for later reading
+        /// Returns the JSON formatted serialised form of the configuration, this can be written to disk for later reading.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A JSON string representing the configuration.</returns>
         public override string ToString() => JsonUtility.ToJson(this);
 
         /// <summary>
-        /// Get the bytes of the serialised configuration for writing to disk
+        /// Get the bytes of the serialised configuration for writing to disk.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A byte array representing the serialised configuration.</returns>
         public byte[] ToBytes() => Encoding.UTF8.GetBytes(ToString());
 
         /// <summary>
