@@ -26,7 +26,11 @@ namespace Heathen.SteamworksIntegration
     [Serializable]
     public class SteamToolsSettings
     {
-        private const string SettingsPath = "Assets/Settings/SteamToolsSettings.json";
+        // Project-scoped, editor-only configuration. Lives in ProjectSettings/ so it is never
+        // imported as an asset, never shipped in a build, and is not edited as project content.
+        private const string SettingsPath = "ProjectSettings/SteamToolsSettings.json";
+        // Previous location (inside Assets/). Older projects are migrated to SettingsPath on first load.
+        private const string LegacySettingsPath = "Assets/Settings/SteamToolsSettings.json";
         private static SteamToolsSettings _instance;
 
         [Serializable]
@@ -186,6 +190,8 @@ namespace Heathen.SteamworksIntegration
         {
             if (_instance != null) return _instance;
 
+            MigrateLegacySettings();
+
             if (File.Exists(SettingsPath))
             {
                 try
@@ -206,6 +212,34 @@ namespace Heathen.SteamworksIntegration
             _instance.CollectUniqueData();
             File.WriteAllText(SettingsPath, JsonUtility.ToJson(_instance, true));
             return _instance;
+        }
+
+        /// <summary>
+        /// Moves a pre-existing settings file from the legacy <c>Assets/Settings/</c> location to the
+        /// project-scoped <c>ProjectSettings/</c> location so upgrading projects keep their configuration.
+        /// The legacy <c>.meta</c> file (if present) is removed so Unity does not flag a missing asset.
+        /// </summary>
+        private static void MigrateLegacySettings()
+        {
+            if (File.Exists(SettingsPath) || !File.Exists(LegacySettingsPath))
+                return;
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath) ?? string.Empty);
+                File.Copy(LegacySettingsPath, SettingsPath, overwrite: false);
+                File.Delete(LegacySettingsPath);
+
+                var legacyMeta = LegacySettingsPath + ".meta";
+                if (File.Exists(legacyMeta))
+                    File.Delete(legacyMeta);
+
+                Debug.Log($"[Steamworks] Migrated Steam tools settings from '{LegacySettingsPath}' to '{SettingsPath}'.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[Steamworks] Failed to migrate Steam tools settings from '{LegacySettingsPath}' to '{SettingsPath}': {e.Message}");
+            }
         }
 
         public static void Save()
