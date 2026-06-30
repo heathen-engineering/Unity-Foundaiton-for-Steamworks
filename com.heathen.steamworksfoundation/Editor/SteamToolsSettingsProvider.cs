@@ -58,16 +58,8 @@ namespace Heathen.SteamworksIntegration
 
             EditorGUILayout.Space(6);
 
-            // ---- Toolkit installed notice ----
-            if (FoundationPackageDetector.IsToolkitInstalled)
-            {
-                EditorGUILayout.HelpBox(
-                    "Toolkit for Steamworks is installed. Settings for Input, Inventory, " +
-                    "and Server configuration are managed by the Toolkit settings provider " +
-                    "(Project Settings > Player > Steamworks).",
-                    MessageType.Info);
-                EditorGUILayout.Space(4);
-            }
+            // ---- Lifecycle (Game Framework subsystem start mode) ----
+            DrawLifecycleSection();
 
             // ---- Action row ----
             EditorGUILayout.BeginHorizontal();
@@ -100,13 +92,37 @@ namespace Heathen.SteamworksIntegration
         [SettingsProvider]
         public static SettingsProvider Create()
         {
-            return new SteamToolsSettingsProvider("Project/Steamworks", SettingsScope.Project)
+            // When the Toolkit is installed it registers the richer Steamworks page at this same path; defer to
+            // it so the two providers never collide and there is a single Project ▸ Subsystems ▸ Steamworks page.
+            if (FoundationPackageDetector.IsToolkitInstalled)
+                return null;
+
+            return new SteamToolsSettingsProvider("Project/Subsystems/Steamworks", SettingsScope.Project)
             {
                 keywords = new HashSet<string>(new[]
                 {
                     "Steamworks", "Steam", "App ID", "Achievement", "Stat", "Leaderboard"
                 })
             };
+        }
+
+        // ----------------------------------------------------------------
+        // Lifecycle — Game Framework subsystem start mode
+        // ----------------------------------------------------------------
+
+        private void DrawLifecycleSection()
+        {
+#if HEATHEN_GAMEFRAMEWORK
+            EditorGUILayout.LabelField("Lifecycle", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Start Mode", _settings.startMode.ToString());
+            if (EditorGUILayout.LinkButton("Change in Project ▸ Subsystems"))
+                SettingsService.OpenProjectSettings("Project/Subsystems");
+            EditorGUILayout.HelpBox(
+                "Start Mode (Disabled / OnDemand / Automatic) is set for every subsystem in one place: " +
+                "Project ▸ Subsystems. It is baked into the generated wrapper when you Generate Code below.",
+                MessageType.None);
+            EditorGUILayout.Space(6);
+#endif
         }
 
         // ----------------------------------------------------------------

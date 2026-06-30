@@ -15,10 +15,8 @@
 using Steamworks;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -44,22 +42,6 @@ namespace Heathen.SteamworksIntegration.API
             _mSteamAPIWarningMessageHook = null;
 
             Server.Configuration = default;
-
-            if (_callbackWaitThread != null)
-            {
-                if (_callbackWaitThread.IsBusy)
-                {
-                    _callbackWaitThread.RunWorkerCompleted -= CallbackWaitThread_RunWorkerCompleted;
-                    _callbackWaitThread.ProgressChanged -= CallbackWaitThread_ProgressChanged;
-
-                    _callbackWaitThread.CancelAsync();
-                }
-
-                _callbackWaitThread.Dispose();
-                _callbackWaitThread = null;
-            }
-
-            _suspendCallbacks = false;
 
             _tickHandlers     = new List<Action>();
             _shutdownHandlers = new List<Action>();
@@ -105,24 +87,19 @@ namespace Heathen.SteamworksIntegration.API
         /// <param name="handler">The action to be executed on unload.</param>
         public static void RegisterUnloadHandler(Action handler)   => _unloadHandlers.Add(handler);
 
-        private static void Application_quitting()
+        private static void Application_quitting() => Shutdown();
+
+        /// <summary>
+        /// Runs the shutdown handlers and shuts the Steam API down. Idempotent (no-op when not
+        /// <see cref="Initialised"/>). Invoked on <see cref="Application.quitting"/> and by
+        /// <c>SteamworksSubsystem.Deinitialize</c> (Game Framework teardown); whichever runs first wins,
+        /// the other is a safe no-op.
+        /// </summary>
+        internal static void Shutdown()
         {
             if (!Initialised)
             {
                 return;
-            }
-
-            if (_callbackWaitThread != null)
-            {
-                if (_callbackWaitThread.IsBusy)
-                {
-                    _callbackWaitThread.RunWorkerCompleted -= CallbackWaitThread_RunWorkerCompleted;
-                    _callbackWaitThread.ProgressChanged -= CallbackWaitThread_ProgressChanged;
-                    _callbackWaitThread.CancelAsync();
-                }
-
-                _callbackWaitThread.Dispose();
-                _callbackWaitThread = null;
             }
 
 #if !UNITY_SERVER
@@ -169,22 +146,17 @@ namespace Heathen.SteamworksIntegration.API
         /// </remarks>
         public static string InitialisationErrorMessage { get; private set; }
         /// <summary>
-        /// The time in milliseconds between checks of Steam Callbacks
-        /// </summary>
-        public static int CallbackTickMilliseconds = 1;
-        /// <summary>
         /// If set to true, the system will log additional information during execution
         /// </summary>
         public static bool IsDebugging = false;
 
-        private static BackgroundWorker _callbackWaitThread;
-        private static volatile bool _suspendCallbacks;
-
-        private static void CallbackWaitThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            //For later use
-        }
-        private static void CallbackWaitThread_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        /// <summary>
+        /// Pumps Steam's callback queue once. Driven each frame by <c>SteamworksSubsystem</c> (Game Framework
+        /// <c>IOnUpdate</c>) while <see cref="Initialised"/>. Replaces the former background-thread pump:
+        /// running on the player loop is frame-capped (no flooding, so no self-throttle) and naturally pauses
+        /// with the app when it loses focus without <c>runInBackground</c>. Main-thread only.
+        /// </summary>
+        internal static void PumpCallbacks()
         {
 #if !UNITY_SERVER
             SteamAPI.RunCallbacks();
@@ -345,22 +317,11 @@ namespace Heathen.SteamworksIntegration.API
 #else
 #endif
                     Application.quitting += Application_quitting;
-                    Application.focusChanged += Application_focusChanged;
 
                     if (Initialised)
                     {
-                        if (_callbackWaitThread == null)
-                        {
-                            _callbackWaitThread = new BackgroundWorker();
-                            _callbackWaitThread.WorkerSupportsCancellation = true;
-                            _callbackWaitThread.WorkerReportsProgress = true;
-                            _callbackWaitThread.DoWork += OnCallbackWaitThreadOnDoWork;
-                            _callbackWaitThread.RunWorkerCompleted += CallbackWaitThread_RunWorkerCompleted;
-                            _callbackWaitThread.ProgressChanged += CallbackWaitThread_ProgressChanged;
-                        }
-
-                        _callbackWaitThread.RunWorkerAsync();
-
+                        // The callback pump is driven each frame by SteamworksSubsystem (Game Framework
+                        // IOnUpdate) once Initialised is true; no background thread to start here.
                         if (actions is { Length: > 0 })
                             InputInitHandler?.Invoke(actions);
 
@@ -374,29 +335,6 @@ namespace Heathen.SteamworksIntegration.API
                         Debug.LogError("[Steamworks.NET] Steam Initialization failed, check the log for more information");
                     }
                 }
-            }
-
-            // ReSharper disable once FunctionNeverReturns
-            /// <summary>
-            /// This function never returns and is "ended" by the cancellation of the worker
-            /// </summary>
-            /// <param name="o"></param>
-            /// <param name="doWorkEventArgs"></param>
-            private static void OnCallbackWaitThreadOnDoWork(object o, DoWorkEventArgs doWorkEventArgs)
-            {
-                while (true)
-                {
-                    Thread.Sleep(CallbackTickMilliseconds);
-
-                    if (_suspendCallbacks) continue;
-
-                    _callbackWaitThread.ReportProgress(1);
-                }
-            }
-
-            private static void Application_focusChanged(bool hasFocus)
-            {
-                _suspendCallbacks = !hasFocus && !Application.runInBackground;
             }
 
             private static CallResult<FileDetailsResult_t> _mFileDetailResultT;
@@ -834,18 +772,8 @@ namespace Heathen.SteamworksIntegration.API
 
                     if (Initialised)
                     {
-                        if (_callbackWaitThread == null)
-                        {
-                            _callbackWaitThread = new BackgroundWorker();
-                            _callbackWaitThread.WorkerSupportsCancellation = true;
-                            _callbackWaitThread.WorkerReportsProgress = true;
-                            _callbackWaitThread.DoWork += OnCallbackWaitThreadOnDoWork;
-                            _callbackWaitThread.RunWorkerCompleted += CallbackWaitThread_RunWorkerCompleted;
-                            _callbackWaitThread.ProgressChanged += CallbackWaitThread_ProgressChanged;
-                        }
-
-                        _callbackWaitThread.RunWorkerAsync();
-
+                        // The callback pump (GameServer.RunCallbacks) is driven each frame by
+                        // SteamworksSubsystem (Game Framework IOnUpdate) once Initialised is true.
                         SteamTools.Events.InvokeOnSteamInitialised();
 
                         if (Configuration.autoLogon)
@@ -859,16 +787,6 @@ namespace Heathen.SteamworksIntegration.API
                         Debug.LogError("[Steamworks.NET] Steam Initialisation failed, check the log for more information");
                     }
                 }
-            }
-
-            private static void OnCallbackWaitThreadOnDoWork(object o, DoWorkEventArgs doWorkEventArgs)
-            {
-                while (true)
-                {
-                    Thread.Sleep(CallbackTickMilliseconds);
-                    _callbackWaitThread.ReportProgress(1);
-                }
-                // ReSharper disable once FunctionNeverReturns
             }
 
             /// <summary>

@@ -3,6 +3,7 @@
     "rootNamespace": "Heathen.SteamworksIntegration",
     "references": [
         "com.rlabrecque.steamworks.net",
+        "Heathen.GameFramework",
         "Unity.TextMeshPro",
         "Unity.Localization",
         "UniTask",
@@ -33,6 +34,11 @@
             "name": "com.heathen.steamworks",
             "expression": "",
             "define": "HEATHEN_TOOLKIT_INSTALLED"
+        },
+        {
+            "name": "com.heathen.gameframework",
+            "expression": "",
+            "define": "HEATHEN_GAMEFRAMEWORK"
         },
         {
             "name": "com.rlabrecque.steamworks.net",

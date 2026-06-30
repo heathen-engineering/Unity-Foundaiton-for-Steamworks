@@ -22,6 +22,10 @@ using UnityEditor;
 
 namespace Heathen.SteamworksIntegration
 {
+    // The Game Framework editor assembly puts a 'Heathen.Editor' namespace in scope; alias the bare name
+    // (inside the namespace, so it wins over that namespace match) to UnityEditor.Editor for the base type.
+    using Editor = UnityEditor.Editor;
+
     // ---- User child components (Foundation owns these in all configurations) ----------------
 
     [CustomEditor(typeof(SteamUserName), true)]

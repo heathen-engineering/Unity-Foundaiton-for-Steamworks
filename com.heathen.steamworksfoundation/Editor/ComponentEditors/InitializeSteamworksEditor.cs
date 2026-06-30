@@ -18,6 +18,10 @@ using UnityEngine;
 
 namespace Heathen.SteamworksIntegration
 {
+    // The Game Framework editor assembly puts a 'Heathen.Editor' namespace in scope; alias the bare name
+    // (inside the namespace, so it wins over that namespace match) to UnityEditor.Editor for the base type.
+    using Editor = UnityEditor.Editor;
+
     [CustomEditor(typeof(InitializeSteamworks), true)]
     public class InitializeSteamworksEditor : Editor
     {
@@ -34,7 +38,7 @@ namespace Heathen.SteamworksIntegration
 
             EditorGUILayout.BeginHorizontal();
             if (EditorGUILayout.LinkButton("Settings"))
-                SettingsService.OpenProjectSettings("Project/Steamworks");
+                SettingsService.OpenProjectSettings("Project/Subsystems/Steamworks");
             if (_settings != null && _settings.ActiveApp.HasValue)
             {
                 if (EditorGUILayout.LinkButton("Portal"))

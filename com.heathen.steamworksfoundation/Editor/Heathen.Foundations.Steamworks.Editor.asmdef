@@ -3,7 +3,9 @@
     "rootNamespace": "Heathen.SteamworksIntegration.Editors",
     "references": [
         "Heathen.Foundations.Steamworks",
-        "com.rlabrecque.steamworks.net"
+        "com.rlabrecque.steamworks.net",
+        "Heathen.GameFramework",
+        "Heathen.GameFramework.Editor"
     ],
     "includePlatforms": [
         "Editor"
@@ -24,6 +26,11 @@
             "name": "com.heathen.steamworks",
             "expression": "",
             "define": "HEATHEN_TOOLKIT_INSTALLED"
+        },
+        {
+            "name": "com.heathen.gameframework",
+            "expression": "",
+            "define": "HEATHEN_GAMEFRAMEWORK"
         },
         {
             "name": "com.rlabrecque.steamworks.net",

@@ -35,6 +35,10 @@ namespace Heathen.SteamworksIntegration
         private const string SteamworksNetLatest =
             "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net";
 
+        // Heathen Game Framework — Foundation's framework dependency (same step in the chain as Steamworks.NET).
+        private const string GameFrameworkUrl =
+            "https://github.com/heathen-engineering/Unity-Game-Framework.git?path=/com.heathen.gameframework";
+
         // ----------------------------------------------------------------
         // Menu items
         // ----------------------------------------------------------------
@@ -51,8 +55,11 @@ namespace Heathen.SteamworksIntegration
         [MenuItem("Help/Heathen/Steamworks Foundation/Install Steamworks.NET (Latest — Not Tested)", priority = 4)]
         public static void InstallSteamworksLatest() => StartCoroutine(DoInstall(SteamworksNetLatest));
 
+        [MenuItem("Help/Heathen/Steamworks Foundation/Install Game Framework", priority = 5)]
+        public static void InstallGameFramework() => StartCoroutine(DoInstall(GameFrameworkUrl));
+
         [MenuItem("Help/Heathen/Steamworks Foundation/Open Settings", priority = 10)]
-        public static void OpenSettings() => SettingsService.OpenProjectSettings("Project/Steamworks");
+        public static void OpenSettings() => SettingsService.OpenProjectSettings("Project/Subsystems/Steamworks");
 
         [MenuItem("Help/Heathen/Steamworks Foundation/Documentation", priority = 11)]
         public static void Documentation() => Application.OpenURL("https://kb.heathen.group/steamworks");
@@ -92,6 +99,19 @@ namespace Heathen.SteamworksIntegration
                 StartCoroutine(DoInstall(SteamworksNetVersion163));
             yield break;
 #endif
+
+#if !HEATHEN_GAMEFRAMEWORK
+            // Game Framework sits at the same step as Steamworks.NET: a dependency of Foundation. UPM does
+            // not transitively resolve git-based package.json dependencies, so offer to add it here.
+            bool installFramework = EditorUtility.DisplayDialog(
+                "Heathen — Steamworks Foundation",
+                "Heathen Game Framework is required but was not found. " +
+                "Would you like to install it now?",
+                "Install", "Cancel");
+
+            if (installFramework)
+                StartCoroutine(DoInstall(GameFrameworkUrl));
+#endif
         }
 
         // ----------------------------------------------------------------
@@ -109,14 +129,14 @@ namespace Heathen.SteamworksIntegration
             SessionState.SetBool("SteamworksInstalling", true);
 
             AddRequest req = Client.Add(uri);
-            Debug.Log($"[SteamToolsMenuItems] Installing Steamworks.NET from {uri} …");
+            Debug.Log($"[SteamToolsMenuItems] Installing package from {uri} …");
 
             while (!req.IsCompleted) yield return null;
 
             if (req.Status == StatusCode.Success)
-                Debug.Log($"[SteamToolsMenuItems] Steamworks.NET {req.Result.version} installed successfully.");
+                Debug.Log($"[SteamToolsMenuItems] {req.Result.displayName} {req.Result.version} installed successfully.");
             else
-                Debug.LogError($"[SteamToolsMenuItems] Steamworks.NET install failed: {req.Error?.message}");
+                Debug.LogError($"[SteamToolsMenuItems] Package install failed: {req.Error?.message}");
 
             SessionState.SetBool("SteamworksInstalling", false);
         }

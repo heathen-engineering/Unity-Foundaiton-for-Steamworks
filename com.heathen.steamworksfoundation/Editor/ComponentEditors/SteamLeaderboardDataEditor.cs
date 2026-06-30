@@ -88,7 +88,7 @@ namespace Heathen.SteamworksIntegration
 
             EditorGUILayout.BeginHorizontal();
             if (EditorGUILayout.LinkButton("Settings"))
-                SettingsService.OpenProjectSettings("Project/Steamworks");
+                SettingsService.OpenProjectSettings("Project/Subsystems/Steamworks");
             if (EditorGUILayout.LinkButton("Portal"))
             {
                 if (_settings != null && _settings.ActiveApp.HasValue)

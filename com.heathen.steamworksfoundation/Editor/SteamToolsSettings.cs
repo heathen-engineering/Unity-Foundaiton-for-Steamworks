@@ -146,6 +146,9 @@ namespace Heathen.SteamworksIntegration
             }
         }
 
+#if HEATHEN_GAMEFRAMEWORK
+        [Newtonsoft.Json.JsonIgnore]
+#endif
         public uint? ActiveApp
         {
             get
@@ -160,6 +163,17 @@ namespace Heathen.SteamworksIntegration
 
         public string       LastGenerated     = "";
         public int          activeAppIndex    = -1;
+#if HEATHEN_GAMEFRAMEWORK
+        /// <summary>
+        /// How the Steamworks subsystem comes up (Disabled / OnDemand / Automatic). Baked into the generated
+        /// <c>SteamTools.Game</c> wrapper so the runtime subsystem honours it without reading any file.
+        /// Defaults to <see cref="SubsystemStartMode.Automatic"/> — Steam initialises itself at startup with no
+        /// component or code. Set <see cref="SubsystemStartMode.OnDemand"/> to instead init via the
+        /// <c>Initialise Steam</c> component (or a manual <c>SteamTools.Interface.Initialise()</c> call), or
+        /// <see cref="SubsystemStartMode.Disabled"/> to never init.
+        /// </summary>
+        public SubsystemStartMode startMode = SubsystemStartMode.Automatic;
+#endif
         public AppSettings  mainAppSettings;
         public AppSettings  demoAppSettings;
         public List<string> dlcNames          = new();
@@ -192,27 +206,32 @@ namespace Heathen.SteamworksIntegration
 
             MigrateLegacySettings();
 
-            if (File.Exists(SettingsPath))
-            {
-                try
-                {
-                    _instance = JsonUtility.FromJson<SteamToolsSettings>(File.ReadAllText(SettingsPath));
-                    if (_instance != null)
-                    {
-                        _instance.mainAppSettings ??= AppSettings.CreateDefault();
-                        _instance.CollectUniqueData();
-                        return _instance;
-                    }
-                }
-                catch { }
-            }
+#if HEATHEN_GAMEFRAMEWORK
+            // Ensure the Steam value-type converters are registered before the first load (InitializeOnLoad
+            // order is not deterministic, and an editor hook can reach here first).
+            SteamToolsSettingsConverters.EnsureRegistered();
 
-            Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath) ?? string.Empty);
-            _instance = new SteamToolsSettings { mainAppSettings = AppSettings.CreateDefault() };
+            // Framework SettingsStore — same ProjectSettings/SteamToolsSettings.json path (resolved from the
+            // type name), so Steamworks stores/loads identically to every other Heathen subsystem. Returns a
+            // fresh default instance when no file exists yet (written on the first Save, the framework convention).
+            _instance = Heathen.Editor.SettingsStore.Load<SteamToolsSettings>();
+#else
+            // Game Framework not yet installed — fall back to the legacy JsonUtility load at the same path.
+            _instance = LoadFromDisk() ?? new SteamToolsSettings();
+#endif
+            _instance.mainAppSettings ??= AppSettings.CreateDefault();
             _instance.CollectUniqueData();
-            File.WriteAllText(SettingsPath, JsonUtility.ToJson(_instance, true));
             return _instance;
         }
+
+#if !HEATHEN_GAMEFRAMEWORK
+        private static SteamToolsSettings LoadFromDisk()
+        {
+            if (!File.Exists(SettingsPath)) return null;
+            try { return JsonUtility.FromJson<SteamToolsSettings>(File.ReadAllText(SettingsPath)); }
+            catch { return null; }
+        }
+#endif
 
         /// <summary>
         /// Moves a pre-existing settings file from the legacy <c>Assets/Settings/</c> location to the
@@ -246,8 +265,12 @@ namespace Heathen.SteamworksIntegration
         {
             if (_instance == null) return;
             _instance.CollectUniqueData();
+#if HEATHEN_GAMEFRAMEWORK
+            Heathen.Editor.SettingsStore.Save(_instance);
+#else
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath) ?? string.Empty);
             File.WriteAllText(SettingsPath, JsonUtility.ToJson(_instance, true));
+#endif
         }
 
         public void CollectUniqueData()

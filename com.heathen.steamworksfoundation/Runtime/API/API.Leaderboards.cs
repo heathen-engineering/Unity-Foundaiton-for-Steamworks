@@ -120,7 +120,7 @@ namespace Heathen.SteamworksIntegration.API
             private static bool _findOrCreateWorking;
             private static bool _ugcDownloadWorking;
 
-            // Queue processing is driven by App.CallbackWaitThread_ProgressChanged which calls
+            // Queue processing is driven by App.PumpCallbacks() which calls
             // ProcessPendingRequests() AFTER SteamAPI.RunCallbacks() completes each tick.
             // This ensures Set() is never called from within a Set() callback — Steam's native
             // dispatcher unregisters call results after dispatch, so re-registering from inside
