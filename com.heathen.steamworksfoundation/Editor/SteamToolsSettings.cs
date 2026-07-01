@@ -355,6 +355,26 @@ namespace Heathen.SteamworksIntegration
             return identifier;
         }
 
+        /// <summary>
+        /// Stable, run-independent hash of arbitrary text (FNV-1a 64-bit, hex). Used to stamp the generated
+        /// wrapper with a <c>// steamtools-hash:</c> marker so the editor can tell when the baked code is behind
+        /// the current settings without a recompile. Do NOT use <see cref="string.GetHashCode"/> here — it is
+        /// randomised per process, so it would report every load as stale.
+        /// </summary>
+        public static string StableHash(string text)
+        {
+            const ulong offset = 14695981039346656037;
+            const ulong prime  = 1099511628211;
+            ulong hash = offset;
+            var bytes = System.Text.Encoding.UTF8.GetBytes(text ?? string.Empty);
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                hash ^= bytes[i];
+                hash *= prime;
+            }
+            return hash.ToString("x16");
+        }
+
         public static bool IsReservedKeyword(string word)
         {
             var keywords = new HashSet<string> {
