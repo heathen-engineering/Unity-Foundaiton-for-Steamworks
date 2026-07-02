@@ -15,6 +15,7 @@
 #if UNITY_EDITOR && !DISABLESTEAMWORKS && STEAM_INSTALLED && HEATHEN_GAMEFRAMEWORK
 using System;
 using Heathen.Editor;
+using UnityEditor;
 
 namespace Heathen.SteamworksIntegration.Editors
 {
@@ -22,11 +23,15 @@ namespace Heathen.SteamworksIntegration.Editors
     /// Surfaces the Steamworks subsystem's start mode to the framework's <c>Project ▸ Subsystems</c> page — the
     /// one standard place to choose Disabled / OnDemand / Automatic. The value is stored in
     /// <see cref="SteamToolsSettings"/> and baked into the generated <c>SteamTools.Game</c> wrapper, so a
-    /// regenerate is required for a change to take effect at runtime.
+    /// regenerate is required for a change to take effect at runtime. Also links the subsystem's overview header
+    /// to the Steamworks settings page.
     /// </summary>
-    public sealed class SteamworksSubsystemConfigEditor : ISubsystemConfigEditor
+    public sealed class SteamworksSubsystemConfigEditor : ISubsystemConfigEditor, ISubsystemSettingsPage, ISubsystemDocumentation
     {
         public Type SubsystemType => typeof(SteamworksSubsystem);
+
+        public void Open() => SettingsService.OpenProjectSettings("Project/Subsystems/Steamworks");
+        public string DocumentationUrl => "https://heathen.group/kb/steam-welcome/";
 
         public SubsystemStartMode StartMode
         {
