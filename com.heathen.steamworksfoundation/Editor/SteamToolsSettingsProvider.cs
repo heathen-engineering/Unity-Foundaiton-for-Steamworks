@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if UNITY_EDITOR && !DISABLESTEAMWORKS && STEAM_INSTALLED
+#if UNITY_EDITOR && !DISABLESTEAMWORKS && STEAM_INSTALLED && HEATHEN_GAMEFRAMEWORK
 using Steamworks;
 using System;
 using System.Collections.Generic;
