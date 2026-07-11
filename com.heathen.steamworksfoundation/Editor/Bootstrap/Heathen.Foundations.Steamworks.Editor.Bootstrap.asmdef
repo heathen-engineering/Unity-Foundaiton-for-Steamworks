@@ -1,0 +1,27 @@
+{
+    "name": "Heathen.Foundations.Steamworks.Editor.Bootstrap",
+    "rootNamespace": "Heathen.SteamworksIntegration",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "",
+            "define": "STEAM_INSTALLED"
+        },
+        {
+            "name": "com.heathen.gameframework",
+            "expression": "",
+            "define": "HEATHEN_GAMEFRAMEWORK"
+        }
+    ],
+    "noEngineReferences": false
+}
