@@ -1,0 +1,6 @@
+# Local, per-checkout agent working notes — not meant to be published.
+# See .agent-notes/00-index.md for what these are.
+.agent-notes/
+
+# Python build artifacts
+scripts/__pycache__/
