@@ -26,6 +26,7 @@ namespace Heathen.SteamworksIntegration
     [ModularEvents(typeof(SteamStatData))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamStatData))]
+    [HelpURL("https://heathen.group/kb/stats/")]
     public class SteamStatDataEvents : MonoBehaviour
     {
         /// <summary>Event invoked when an integer stat's value changes.</summary>

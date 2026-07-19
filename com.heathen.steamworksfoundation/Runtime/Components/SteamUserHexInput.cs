@@ -24,6 +24,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamUserData), "Hex Inputs", nameof(input))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
+    [HelpURL("https://heathen.group/kb/user/")]
     public class SteamUserHexInput : MonoBehaviour
     {
         /// <summary>

@@ -26,6 +26,7 @@ namespace Heathen.SteamworksIntegration
     /// </summary>
     [AddComponentMenu("Steamworks/User")]
     [DisallowMultipleComponent]
+    [HelpURL("https://heathen.group/kb/user/")]
     public class SteamUserData : MonoBehaviour, ISteamUserData
     {
         /// <summary>

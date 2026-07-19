@@ -28,6 +28,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamUserData), "Status", nameof(settings))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
+    [HelpURL("https://heathen.group/kb/user/")]
     public class SteamUserStatus : MonoBehaviour
     {
         /// <summary>

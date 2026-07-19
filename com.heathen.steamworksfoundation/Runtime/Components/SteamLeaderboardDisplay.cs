@@ -27,6 +27,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamLeaderboardData), "Display", "")]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
+    [HelpURL("https://heathen.group/kb/leaderboards/")]
     public class SteamLeaderboardDisplay : MonoBehaviour
     {
         /// <summary>

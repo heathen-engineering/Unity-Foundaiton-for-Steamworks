@@ -24,7 +24,7 @@ namespace Heathen.SteamworksIntegration
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Steamworks/Achievement")]
-    [HelpURL("https://kb.heathen.group/steamworks/features/achievements")]
+    [HelpURL("https://heathen.group/kb/steam-features-achievements/")]
     public class SteamAchievementData : MonoBehaviour
     {
         /// <summary>

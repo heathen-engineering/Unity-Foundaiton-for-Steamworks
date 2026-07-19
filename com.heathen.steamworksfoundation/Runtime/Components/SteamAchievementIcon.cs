@@ -24,6 +24,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamAchievementData), "Icons", nameof(image))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamAchievementData))]
+    [HelpURL("https://heathen.group/kb/steam-features-achievements/")]
     public class SteamAchievementIcon : MonoBehaviour
     {
         /// <summary>

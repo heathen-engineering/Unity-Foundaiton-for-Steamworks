@@ -22,6 +22,7 @@ namespace Heathen.SteamworksIntegration
     /// the <c>entryTemplate</c> prefab on <see cref="SteamLeaderboardDisplay"/>.
     /// </summary>
     [RequireComponent(typeof(SteamUserData))]
+    [HelpURL("https://heathen.group/kb/leaderboards/")]
     public class SteamLeaderboardEntryUI : MonoBehaviour, ILeaderboardEntryDisplay
     {
         [SerializeField] private TMPro.TextMeshProUGUI score;

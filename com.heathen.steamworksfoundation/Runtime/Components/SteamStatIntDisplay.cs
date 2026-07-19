@@ -23,6 +23,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamStatData), "Int Display", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamStatData))]
+    [HelpURL("https://heathen.group/kb/stats/")]
     public class SteamStatIntDisplay : MonoBehaviour
     {
         /// <summary>

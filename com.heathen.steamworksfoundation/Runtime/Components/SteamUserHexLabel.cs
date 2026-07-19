@@ -24,6 +24,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamUserData), "Hex Labels", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
+    [HelpURL("https://heathen.group/kb/user/")]
     public class SteamUserHexLabel : MonoBehaviour
     {
         /// <summary>

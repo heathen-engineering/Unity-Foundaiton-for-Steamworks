@@ -24,7 +24,7 @@ namespace Heathen.SteamworksIntegration
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Steamworks/Stat")]
-    [HelpURL("https://kb.heathen.group/steamworks/features/stats")]
+    [HelpURL("https://heathen.group/kb/stats/")]
     public class SteamStatData : MonoBehaviour
     {
         /// <summary>

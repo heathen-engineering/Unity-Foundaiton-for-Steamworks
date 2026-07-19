@@ -24,6 +24,7 @@ namespace Heathen.SteamworksIntegration
     [ModularEvents(typeof(SteamLeaderboardData))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
+    [HelpURL("https://heathen.group/kb/leaderboards/")]
     public class SteamLeaderboardDataEvents : MonoBehaviour, ISteamLeaderboardDataEvents
     {
         /// <summary>Event invoked when the leaderboard data changes.</summary>

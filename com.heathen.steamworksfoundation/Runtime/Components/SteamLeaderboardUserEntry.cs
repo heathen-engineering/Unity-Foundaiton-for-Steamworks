@@ -25,6 +25,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamLeaderboardData), "User Entries", nameof(entryUI))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
+    [HelpURL("https://heathen.group/kb/leaderboards/")]
     public class SteamLeaderboardUserEntry : MonoBehaviour
     {
         /// <summary>

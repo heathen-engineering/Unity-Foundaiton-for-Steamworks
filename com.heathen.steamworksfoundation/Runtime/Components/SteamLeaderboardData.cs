@@ -24,7 +24,7 @@ namespace Heathen.SteamworksIntegration
     /// Represents a Steam leaderboard component.
     /// </summary>
     [AddComponentMenu("Steamworks/Leaderboard")]
-    [HelpURL("https://kb.heathen.group/steamworks/features/leaderboards")]
+    [HelpURL("https://heathen.group/kb/leaderboards/")]
     public class SteamLeaderboardData : MonoBehaviour
     {
         /// <summary>

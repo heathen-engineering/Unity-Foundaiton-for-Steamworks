@@ -22,7 +22,7 @@ namespace Heathen.SteamworksIntegration
     /// initialisation chain via <see cref="SteamTools.Interface.Initialise()"/>.
     /// </summary>
     [AddComponentMenu("Steamworks/Initialise Steam")]
-    [HelpURL("https://kb.heathen.group/steamworks/initialization/unity-initialization#component")]
+    [HelpURL("https://heathen.group/kb/steam-initialisation/#code-free-1")]
     [DisallowMultipleComponent]
     public class InitializeSteamworks : MonoBehaviour
     {

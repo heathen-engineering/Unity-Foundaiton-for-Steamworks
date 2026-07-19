@@ -23,6 +23,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamLeaderboardData), "Ranks", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
+    [HelpURL("https://heathen.group/kb/leaderboards/")]
     public class SteamLeaderboardRank : MonoBehaviour
     {
         /// <summary>

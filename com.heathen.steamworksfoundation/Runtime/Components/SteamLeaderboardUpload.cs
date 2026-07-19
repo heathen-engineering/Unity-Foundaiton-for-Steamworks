@@ -24,6 +24,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamLeaderboardData), "Upload", "")]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamLeaderboardData))]
+    [HelpURL("https://heathen.group/kb/leaderboards/")]
     public class SteamLeaderboardUpload : MonoBehaviour
     {
         /// <summary>

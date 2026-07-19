@@ -25,6 +25,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamUserData), "Levels", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
+    [HelpURL("https://heathen.group/kb/user/")]
     public class SteamUserLevel : MonoBehaviour
     {
         /// <summary>

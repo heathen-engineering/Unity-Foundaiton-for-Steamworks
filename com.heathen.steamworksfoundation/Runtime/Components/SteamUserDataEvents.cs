@@ -27,6 +27,7 @@ namespace Heathen.SteamworksIntegration
     [ModularEvents(typeof(SteamUserData))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamUserData))]
+    [HelpURL("https://heathen.group/kb/user/")]
     public class SteamUserDataEvents : MonoBehaviour, IPointerClickHandler
     {
         /// <summary>Event invoked when the user's persona state or data changes.</summary>

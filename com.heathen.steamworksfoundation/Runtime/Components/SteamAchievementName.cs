@@ -23,6 +23,7 @@ namespace Heathen.SteamworksIntegration
     [ModularComponent(typeof(SteamAchievementData), "Names", nameof(label))]
     [AddComponentMenu("")]
     [RequireComponent(typeof(SteamAchievementData))]
+    [HelpURL("https://heathen.group/kb/steam-features-achievements/")]
     public class SteamAchievementName : MonoBehaviour
     {
         /// <summary>
