@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)
 ![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green?style=flat-square)
-![Unity](https://img.shields.io/badge/Unity-6%20%2B-black?style=flat-square&logo=unity&logoColor=white)
+![Unity](https://img.shields.io/badge/Unity-6%20%2B-%23313131?style=flat-square&logo=unity&logoColor=white)
 [![Dependency](https://img.shields.io/badge/Dependency-Steamworks.NET-lightgrey?style=flat-square)](https://steamworks.github.io/)
 
 A lightweight, modular integration layer for [Steamworks.NET](https://steamworks.github.io/) that exposes Steam features through flexable components and a type-safe generated code wrapper.
@@ -10,7 +10,7 @@ A lightweight, modular integration layer for [Steamworks.NET](https://steamworks
 -----
 
 ## 🛠 Also Available For
-[![Godot](https://img.shields.io/badge/Godot-4.6%20%2B-478CBF?style=for-the-badge&logo=godotengine&logoColor=white)](https://github.com/heathen-engineering/Godot-Foundation-for-Steamworks)
+[![Godot](https://img.shields.io/badge/Godot-4.6%20%2B-%23478CBF?style=for-the-badge&logo=godotengine&logoColor=white)](https://github.com/heathen-engineering/Godot-Foundation-for-Steamworks)
 [![O3DE](https://img.shields.io/badge/O3DE-25.10%20%2B-%2300AEEF?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAxTDEgNy40djkuMkwxMiAyM2wxMS02LjRWNy40TDEyIDF6bTkuMSAxNC45TDExLjUgMjEuM2wtOC42LTYuNFY4LjFsOC42LTYuNCA5LjEgNi40djYuOHpNMTEuNSA0LjZMMi45IDkuNnY0LjhsOC42IDUuMSA4LjYtNS4xVjkuNmwtOC42LTUuMHoiLz48L3N2Zz4=)](https://github.com/heathen-engineering/O3DE-Foundation-for-Steamworks)
 
 -----
@@ -27,20 +27,36 @@ Learn more or explore other ways to support @ [heathen.group/kb](https://heathen
 
 ## What it does
 
-Foundation maps Steamworks interfaces to Unity-friendly patterns, primarily focused on **User Data, Stats, Achievements, and Leaderboards**. It operates via two main systems:
+Foundation maps Steamworks interfaces to Unity-friendly patterns. It fully owns **User, Stats,
+Achievements, and Leaderboards** with a complete, ready-to-use API and Inspector components for
+each, plus a wider layer of **DLC, App/ownership, and Steam Input/Lobby data plumbing** that the
+Toolkit tier builds ergonomics on top of. It operates via two main systems:
 
 | System | Purpose |
 |-----|---------|
 | **Generated Wrapper** | A static `SteamTools.Game` class that provides type-safe access to your specific App IDs and API names. |
 | **Modular Components** | MonoBehaviours that allow you to build Steam-driven UI in the Inspector without writing glue code. |
 
-The following core features are covered:
+The following features are fully covered end-to-end (API + Inspector components):
 
-- **Core** — Application IDs, multi-app support (Main, Demo, Playtest), and automated initialization.
-- **User** — Persona names, Steam levels, online status, and avatars.
+- **Core** — Application IDs, multi-app support (Main, Demo, Playtest), automated initialization,
+  and DLC ownership/install/download-progress queries.
+- **User** — Persona names, Steam levels, online status, rich presence, and avatars.
 - **Stats** — Integer and Float stat management with local caching and server sync.
 - **Achievements** — Localized names, descriptions, icons, and unlock/lock state.
 - **Leaderboards** — Score uploading, rank retrieval, and entry display.
+
+Foundation also ships the **data-plumbing layer** for a broader set of Steam features — typed
+data structs and `SteamTools` events, but not yet dedicated components/high-level helpers (that
+ergonomic layer is what the Toolkit tier adds on top, matching the Foundation/Toolkit split used
+on the other engines):
+
+- **Lobbies** — `LobbyData`/`LobbyMemberData` plus a full set of `SteamTools` events (enter,
+  leave, invite, chat message, chat/data update, game-server, join request).
+- **Steam Input** — `InputActionData`/`InputActionSetData`/`InputActionStateData` and action-set
+  lookup helpers (`SteamTools.GetSet`/`GetAction`).
+- **Steam Workshop** — `WorkshopItemEditorData` for authoring workshop item metadata.
+- **Timeline** — `TimelineEventData` for the Steam Timeline API.
 
 ---
 
