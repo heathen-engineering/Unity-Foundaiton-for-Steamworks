@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -48,10 +49,42 @@ namespace Heathen.SteamworksIntegration.API
             _unloadHandlers   = new List<Action>();
             InputInitHandler  = null;
 
-            Initialised                = false;
+            _clientInitialised          = false;
+            _serverInitialised          = false;
             HasInitialisationError     = false;
             InitialisationErrorMessage = string.Empty;
+
+#if UNITY_EDITOR
+            // Second, editor-specific shutdown trigger for the SERVER side only, independent of
+            // Application.quitting (which Unity's own docs confirm also fires on Stop Play Mode, not
+            // just on a real quit). ExitingPlayMode fires earlier in the stop sequence, while the
+            // frame loop is still running, giving Server.Shutdown()'s callback pump a real chance to
+            // flush the un-advertise/logoff before anything gets torn down.
+            //
+            // Deliberately calls Server.Shutdown() here, NOT the whole-app Shutdown() -- the frame
+            // loop is still running at ExitingPlayMode (MonoBehaviours keep ticking for at least the
+            // rest of this frame), so tearing down the CLIENT this early leaves anything still
+            // calling into it mid-frame (e.g. SteamInputManager.LateUpdate -> SteamInput.RunFrame)
+            // hitting a dead SteamAPI and throwing. The client keeps shutting down at its normal,
+            // later time via Application.quitting -> the whole-app Shutdown() below -- only the
+            // server side (the one actually at risk of a hung Server Browser registration) benefits
+            // from going early. Guarded so a domain reload that doesn't clear statics (Enter Play
+            // Mode Options) doesn't double-subscribe.
+            if (!_editorShutdownHookRegistered)
+            {
+                _editorShutdownHookRegistered = true;
+                UnityEditor.EditorApplication.playModeStateChanged += change =>
+                {
+                    if (change == UnityEditor.PlayModeStateChange.ExitingPlayMode && _serverInitialised)
+                        Server.Shutdown();
+                };
+            }
+#endif
         }
+
+#if UNITY_EDITOR
+        private static bool _editorShutdownHookRegistered;
+#endif
 
         // -----------------------------------------------------------------------
         // Lifecycle hook registration — called by Toolkit subsystems
@@ -97,23 +130,27 @@ namespace Heathen.SteamworksIntegration.API
         /// </summary>
         internal static void Shutdown()
         {
+            // Tears down whichever context(s) are actually up (client, server, or both), because
+            // the process itself is closing -- a different concern from Server.Shutdown() below,
+            // which stops just the server side mid-session without touching the client.
             if (!Initialised)
             {
                 return;
             }
 
-#if !UNITY_SERVER
-            foreach (var h in _shutdownHandlers) h();
+            if (_clientInitialised)
+            {
+                foreach (var h in _shutdownHandlers) h();
 
-            SteamAPI.Shutdown();
-#else
-            if (Server.Configuration.usingGameServerAuthApi)
-                SteamGameServer.SetAdvertiseServerActive(false);
+                SteamAPI.Shutdown();
+                _clientInitialised = false;
+            }
 
-            SteamGameServer.LogOff();
+            if (_serverInitialised)
+            {
+                Server.Shutdown();
+            }
 
-            Steamworks.GameServer.Shutdown();
-#endif
             Unload();
         }
         /// <summary>
@@ -121,16 +158,23 @@ namespace Heathen.SteamworksIntegration.API
         /// </summary>
         public static void Unload()
         {
-            Initialised = false;
+            _clientInitialised = false;
+            _serverInitialised = false;
             HasInitialisationError = false;
             InitialisationErrorMessage = string.Empty;
 
             foreach (var h in _unloadHandlers) h();
         }
+        // Client and Server each track their own "already initialised" state independently, so a
+        // listen server can bring up both contexts in one process without the second Initialise call
+        // seeing a shared flag already set and aborting. This property is their union, for existing
+        // call sites that just want "is Steam up in some capacity".
+        internal static bool _clientInitialised;
+        internal static bool _serverInitialised;
         /// <summary>
-        /// If true, then the system has been initialised
+        /// If true, then the system has been initialised (client and/or server context)
         /// </summary>
-        public static bool Initialised { get; private set; }
+        public static bool Initialised => _clientInitialised || _serverInitialised;
         /// <summary>
         /// Indicates an error with API initialisation
         /// </summary>
@@ -158,13 +202,19 @@ namespace Heathen.SteamworksIntegration.API
         /// </summary>
         internal static void PumpCallbacks()
         {
-#if !UNITY_SERVER
-            SteamAPI.RunCallbacks();
-            Leaderboards.Client.ProcessPendingRequests();
-            foreach (var h in _tickHandlers) h();
-#else
-            Steamworks.GameServer.RunCallbacks();
-#endif
+            // Pumps whichever context(s) are actually initialised -- a client build can also bring
+            // up the game server context (a listen server), so this is not a compile-time either/or.
+            if (_clientInitialised)
+            {
+                SteamAPI.RunCallbacks();
+                Leaderboards.Client.ProcessPendingRequests();
+                foreach (var h in _tickHandlers) h();
+            }
+
+            if (_serverInitialised)
+            {
+                Steamworks.GameServer.RunCallbacks();
+            }
         }
         #endregion
         /// <summary>
@@ -213,6 +263,10 @@ namespace Heathen.SteamworksIntegration.API
                 _mFileDetailResultT = null;
             }
 
+            /// <summary>
+            /// True if the client context is initialised (see <see cref="App._clientInitialised"/>).
+            /// </summary>
+            public static bool Initialised => _clientInitialised;
             /// <summary>
             /// True if the app is connected to the Steam backend, false otherwise.
             /// </summary>
@@ -270,7 +324,7 @@ namespace Heathen.SteamworksIntegration.API
                         Debug.Log("Initializing Steam Client API");
                     var result = SteamAPI.InitEx(out var errorMessage);
 
-                    Initialised = result == ESteamAPIInitResult.k_ESteamAPIInitResult_OK;
+                    _clientInitialised = result == ESteamAPIInitResult.k_ESteamAPIInitResult_OK;
 
                     if (!Initialised)
                     { 
@@ -601,6 +655,10 @@ namespace Heathen.SteamworksIntegration.API
         public static class Server
         {
             /// <summary>
+            /// True if the server context is initialised (see <see cref="App._serverInitialised"/>).
+            /// </summary>
+            public static bool Initialised => _serverInitialised;
+            /// <summary>
             /// Gets the ID assigned to this server on logon if any
             /// </summary>
             public static CSteamID ID => SteamGameServer.GetSteamID();
@@ -613,12 +671,35 @@ namespace Heathen.SteamworksIntegration.API
             /// Returns the server's configuration data, see <see cref="SteamGameServerConfiguration"/> for more information.
             /// </summary>
             public static SteamGameServerConfiguration Configuration { get; set; }
-            
+            /// <summary>
+            /// True once the server is both <see cref="Initialised"/> and <see cref="LoggedOn"/> --
+            /// i.e. actually ready to be advertised/found. Combine with <see cref="OnReadyChanged"/>
+            /// rather than polling.
+            /// </summary>
+            public static bool Ready => Initialised && LoggedOn;
+            /// <summary>
+            /// Fires whenever <see cref="Ready"/> transitions, both becoming ready (true) and no
+            /// longer ready (false) -- covers connect, disconnect, connect failure, LogOff, and
+            /// Shutdown, so a caller only needs the one subscription to track server availability
+            /// end to end, including across repeated start/stop cycles.
+            /// </summary>
+            public static event Action<bool> OnReadyChanged;
+
+            private static bool _lastReady;
+            private static void RefreshReady()
+            {
+                var ready = Ready;
+                if (ready == _lastReady) return;
+                _lastReady = ready;
+                OnReadyChanged?.Invoke(ready);
+            }
+
             private static void OnSteamServersDisconnected(EResult result)
             {
                 LoggedOn = false;
                 if (IsDebugging)
                     Debug.LogError("Steamworks.GameServer reported connection Closed: " + result.ToString());
+                RefreshReady();
             }
 
             private static void OnSteamServersConnected()
@@ -635,6 +716,7 @@ namespace Heathen.SteamworksIntegration.API
                         $"\n\tMax Player Count = {Configuration.maxPlayerCount}");
 
                 SendUpdatedServerDetailsToSteam();
+                RefreshReady();
             }
 
             private static void OnSteamServerConnectFailure(EResult result, bool retrying)
@@ -642,6 +724,7 @@ namespace Heathen.SteamworksIntegration.API
                 LoggedOn = false;
                 if (IsDebugging)
                     Debug.LogError("Steamworks.GameServer.LogOn reported connection Failure: " + result.ToString());
+                RefreshReady();
             }
             /// <summary>
             /// Initialise the Steam Game Server API with the provided configuration settings.
@@ -650,7 +733,14 @@ namespace Heathen.SteamworksIntegration.API
             /// <param name="serverConfiguration">The configuration settings to apply.</param>
             public static void Initialise(AppData appId, SteamGameServerConfiguration serverConfiguration)
             {
-                if (Initialised)
+                if (!IsListenServerPermitted())
+                {
+                    HasInitialisationError = true;
+                    InitialisationErrorMessage = "This app is not permitted to initialise a Steam Game Server context (Allow Listen Server is off for this App ID in Project Settings > Steamworks > Editing). Operation aborted.";
+                    SteamTools.Events.InvokeOnSteamInitialisationError(InitialisationErrorMessage);
+                    Debug.LogWarning(InitialisationErrorMessage);
+                }
+                else if (Initialised)
                 {
                     HasInitialisationError = true;
                     InitialisationErrorMessage = "Tried to initialise the Steamworks API twice in one session, operation aborted!";
@@ -702,7 +792,7 @@ namespace Heathen.SteamworksIntegration.API
                     if (IsDebugging)
                         Debug.Log("Initialising Steam Game Server API: (" + serverConfiguration.ip + ", " + serverConfiguration.gamePort.ToString() + ", " + serverConfiguration.queryPort.ToString() + ", " + eMode.ToString() + ", " + serverConfiguration.serverVersion + ")");
 
-                    Initialised = GameServer.Init(serverConfiguration.ip, serverConfiguration.gamePort, serverConfiguration.queryPort, eMode, serverConfiguration.serverVersion);
+                    _serverInitialised = GameServer.Init(serverConfiguration.ip, serverConfiguration.gamePort, serverConfiguration.queryPort, eMode, serverConfiguration.serverVersion);
 
                     if (!Initialised)
                     {
@@ -820,6 +910,46 @@ namespace Heathen.SteamworksIntegration.API
                 }
 
                 Debug.Log("Steamworks Game Server Started.\nWaiting for connection result from Steamworks");
+                RefreshReady();
+            }
+            /// <summary>
+            /// Log the server off Steam without tearing down the underlying native Game Server
+            /// context -- cheaper than <see cref="Shutdown"/> when you expect to <see cref="LogOn"/>
+            /// again shortly (e.g. between matches on a listen server), since it skips the
+            /// InitEx/Shutdown round trip. Safe to call when not logged on (no-op).
+            /// </summary>
+            public static void LogOff()
+            {
+                if (!LoggedOn) return;
+
+                if (Configuration.usingGameServerAuthApi || Configuration.enableHeartbeats)
+                    SteamGameServer.SetAdvertiseServerActive(false);
+
+                SteamGameServer.LogOff();
+                LoggedOn = false;
+                RefreshReady();
+            }
+            /// <summary>
+            /// Stops this server context entirely -- logs off (if logged on) and shuts the native
+            /// Game Server context down. Idempotent: safe to call when never initialised, or already
+            /// shut down. After this, <see cref="Initialise"/> can be called again (this is what
+            /// makes on-demand start/stop/restart -- e.g. a listen server ending one hosted session
+            /// and starting another -- safe to do repeatedly).
+            /// </summary>
+            public static void Shutdown()
+            {
+                if (!Initialised) return;
+
+                LogOff();
+                // One last pump before tearing the native context down, so the LogOff/un-advertise
+                // sent above actually reaches Steam instead of racing the shutdown -- the suspected
+                // cause of a registration being left looking "live" in the Server Browser after an
+                // otherwise-clean stop.
+                Steamworks.GameServer.RunCallbacks();
+                UnregisterCallbacks();
+                Steamworks.GameServer.Shutdown();
+                _serverInitialised = false;
+                RefreshReady();
             }
             /// <summary>
             /// Update server details on the Steam Game Server API.
@@ -848,6 +978,53 @@ namespace Heathen.SteamworksIntegration.API
                 SteamTools.Events.OnSteamServersConnected += OnSteamServersConnected;
                 SteamTools.Events.OnSteamServersDisconnected += OnSteamServersDisconnected;
                 SteamTools.Events.OnSteamServerConnectFailure += OnSteamServerConnectFailure;
+            }
+            /// <summary>
+            /// Reverses <see cref="RegisterCallbacks"/>, called from <see cref="Shutdown"/> so repeated
+            /// Initialise/Shutdown cycles don't double-subscribe the static handlers.
+            /// </summary>
+            public static void UnregisterCallbacks()
+            {
+                SteamTools.Events.OnSteamServersConnected -= OnSteamServersConnected;
+                SteamTools.Events.OnSteamServersDisconnected -= OnSteamServersDisconnected;
+                SteamTools.Events.OnSteamServerConnectFailure -= OnSteamServerConnectFailure;
+            }
+
+            /// <summary>
+            /// Reflectively reads the generated <c>SteamTools.Game.EnableListenServer</c> flag
+            /// (baked per-App-ID, from Project
+            /// Settings &gt; Steamworks &gt; Editing &gt; Allow Listen Server), the same idiom
+            /// <c>SteamworksSubsystem.ResolveStartMode()</c> uses for <c>StartMode</c>. This is the
+            /// single enforcement point for every caller of <see cref="Initialise"/> -- the generated
+            /// <c>Game.Initialise()</c>'s own 3-way logic, and any dev code calling
+            /// <c>SteamTools.Server.Initialise</c> directly -- since neither Foundation nor Toolkit
+            /// can reference the generated type directly (it compiles last, into Assembly-CSharp).
+            /// Older generated wrappers without the field, or no generated wrapper at all, default to
+            /// <c>false</c> (deny) so upgrading Foundation/Toolkit without regenerating never silently
+            /// grants a new capability.
+            /// </summary>
+            private static bool IsListenServerPermitted()
+            {
+                try
+                {
+                    foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                    {
+                        var gameType = asm.GetType("SteamTools.Game");
+                        if (gameType == null) continue;
+
+                        var field = gameType.GetField("EnableListenServer", BindingFlags.Public | BindingFlags.Static);
+                        if (field != null && field.FieldType == typeof(bool))
+                            return (bool)field.GetValue(null);
+
+                        break; // found the type but no EnableListenServer member -- deny by default
+                    }
+                }
+                catch
+                {
+                    // Fall through to the default.
+                }
+
+                return false;
             }
         }
     }

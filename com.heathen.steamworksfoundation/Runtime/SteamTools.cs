@@ -165,6 +165,12 @@ namespace SteamTools
 
             Events.Initialise();
             Events.OnSteamInitialisationError += HandleInitialisedError;
+            // IsReady was only ever set true (in RaiseOnReady) and never cleared again -- any code
+            // that reads it as a live "is Steam still usable right now" guard (e.g.
+            // SteamInputManager.LateUpdate before calling SteamInput.RunFrame) kept seeing true after
+            // a real shutdown and crashed calling into a torn-down SteamAPI. Reset it alongside the
+            // client's own teardown, before SteamAPI.Shutdown() runs.
+            App.RegisterShutdownHandler(() => IsReady = false);
             try
             {
                 Type gameType = null;
@@ -192,8 +198,12 @@ namespace SteamTools
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error invoking SteamTools.Game.Initialise: {e.Message}");
-                OnInitialisationError?.Invoke($"Error invoking SteamTools.Game.Initialise: {e.Message}");
+                // Invoke() wraps the real failure in a TargetInvocationException whose own Message is
+                // always the generic "Exception has been thrown by the target of an invocation." --
+                // unwrap to the actual cause instead of masking it.
+                var real = e is System.Reflection.TargetInvocationException { InnerException: { } inner } ? inner : e;
+                Debug.LogError($"Error invoking SteamTools.Game.Initialise: {real}");
+                OnInitialisationError?.Invoke($"Error invoking SteamTools.Game.Initialise: {real.Message}");
             }
         }
 

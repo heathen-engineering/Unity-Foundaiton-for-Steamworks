@@ -58,6 +58,7 @@ namespace Heathen.SteamworksIntegration
             if (settings == null) throw new ArgumentNullException(nameof(settings));
 
             settings.CollectUniqueData();
+            EnsureGlobalGameFrameworkDefine();
 
             var path = FindExistingScript() ?? DefaultOutputPath;
             Directory.CreateDirectory(Path.GetDirectoryName(path) ?? string.Empty);
@@ -70,6 +71,30 @@ namespace Heathen.SteamworksIntegration
             SteamToolsSettings.Save();
 
             Debug.Log($"[SteamToolsCodeGenerator] Generated {ScriptName} at {path}");
+        }
+
+        /// <summary>
+        /// Makes <c>HEATHEN_GAMEFRAMEWORK</c> visible to <c>Assets/Scripts/Generated/SteamTools.Game.cs</c>
+        /// itself, not just to this editor assembly. That file has no asmdef of its own, so it compiles into
+        /// the implicit <c>Assembly-CSharp</c> -- which never receives an asmdef's <c>versionDefines</c>
+        /// (those are local to the declaring assembly only, not transitive). Without this, the generated
+        /// <c>#if HEATHEN_GAMEFRAMEWORK</c> block around <c>StartMode</c> silently never compiles in, no
+        /// matter what Start Mode is configured, and <c>SteamworksSubsystem.ResolveStartMode()</c>'s
+        /// reflection lookup always falls through to its hardcoded default.
+        /// </summary>
+        private static void EnsureGlobalGameFrameworkDefine()
+        {
+#if HEATHEN_GAMEFRAMEWORK
+            foreach (var target in new[] {
+                UnityEditor.Build.NamedBuildTarget.Standalone,
+                UnityEditor.Build.NamedBuildTarget.Server })
+            {
+                var raw = PlayerSettings.GetScriptingDefineSymbols(target);
+                var set = new System.Collections.Generic.HashSet<string>(raw.Split(';', StringSplitOptions.RemoveEmptyEntries));
+                if (set.Add("HEATHEN_GAMEFRAMEWORK"))
+                    PlayerSettings.SetScriptingDefineSymbols(target, string.Join(";", set));
+            }
+#endif
         }
 
         /// <summary>True when a generated wrapper already exists in the project.</summary>

@@ -68,6 +68,15 @@ namespace Heathen.SteamworksIntegration
         {
             public string editorName;
             public uint applicationId;
+            /// <summary>
+            /// Gates whether THIS app (not the project as a whole) is permitted to bring up a Steam
+            /// Game Server context at all, e.g. a Demo app may not be allowed to host a listen server
+            /// while Main is, or a given Playtest may or may not be either. Checked both by the
+            /// generated <c>SteamTools.Game.Initialise()</c>'s automatic 3-way logic and, centrally,
+            /// by <c>API.App.Server.Initialise</c> itself -- so it's enforced even when a dev calls
+            /// <c>SteamTools.Server.Initialise</c> directly.
+            /// </summary>
+            public bool enableListenServer = false;
             public List<LeaderboardSetting> leaderboards   = new();
             public List<StatData>           stats          = new();
             public List<AchievementData>    achievements   = new();
@@ -178,7 +187,16 @@ namespace Heathen.SteamworksIntegration
         public AppSettings  demoAppSettings;
         public List<string> dlcNames          = new();
         public List<uint>   dlc               = new();
-        public SteamGameServerConfiguration defaultServerSettings;
+        /// <summary>
+        /// Default Steam Game Server configuration, baked into the generated
+        /// <c>SteamTools.Game.ServerConfiguration</c>. A real listen/dedicated server's actual
+        /// config is almost always supplied at runtime instead (an ini/JSON file, or values read
+        /// from a player-facing hosting form) -- see <c>SteamGameServerConfiguration</c>'s
+        /// <c>ParseIniString</c>/file-path load overloads and <c>SteamTools.Game.ServerConfigFromIni</c>
+        /// /<c>ServerConfigFromJson</c> -- so this is just a convenience starting point, not
+        /// something that needs per-App-ID granularity.
+        /// </summary>
+        public SteamGameServerConfiguration defaultServerSettings = SteamGameServerConfiguration.Default;
         public List<AppSettings> playtestSettings = new();
 
         public List<NameAndID> inventoryItems = new();
