@@ -2,11 +2,6 @@
 
 ## v1.63.13 — 2026-07-20
 
-- Foundation for Steamworks 1.63.13: listen-server support
-- Remove accidentally-committed Python bytecode cache, ignore it going forward
-
-## v1.63.13 — 2026-07-20
-
 - **New**: Steam listen-server support — `API.App.Client`/`API.App.Server` now track independent
   initialisation state, so a single process can bring up the Steam client and a Steam Game Server
   context together (a "listen server" whose host is also a player), instead of the two being
