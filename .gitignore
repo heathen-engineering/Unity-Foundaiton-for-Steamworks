@@ -1,6 +1,10 @@
-# Local, per-checkout agent working notes — not meant to be published.
-# See .agent-notes/00-index.md for what these are.
-.agent-notes/
+# No dot-prefixed folder is ever checked in to this repo (IDE project files, local agent tool
+# state — .idea, .claude, .junie, .agent-notes, .vscode, .cursor, whatever comes next — none of
+# it is meant to be published or pulled by anyone). Only .github/ is exempted, since its
+# workflow/funding files are real, load-bearing repo infrastructure, not local tool state.
+.*/
+!/.github/
+!/.github/**
 
 # Python build artifacts
 scripts/__pycache__/
