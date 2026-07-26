@@ -1,3 +1,5 @@
+> **Moved to Codeberg:** this repo now lives at [codeberg.org/Heathen-Engineering/Unity-Foundation-for-Steamworks](https://codeberg.org/Heathen-Engineering/Unity-Foundation-for-Steamworks) — please use that copy going forward. This GitHub copy will remain live for now while Heathen's Pro Toolkits finish migrating to our private Git server; once that's complete, this GitHub repo will be archived.
+
 # Foundation for Steamworks
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)
