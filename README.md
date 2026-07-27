@@ -1,4 +1,11 @@
-> **Moved to Codeberg:** this repo now lives at [codeberg.org/Heathen-Engineering/Unity-Foundation-for-Steamworks](https://codeberg.org/Heathen-Engineering/Unity-Foundation-for-Steamworks) — please use that copy going forward. This GitHub copy will remain live for now while Heathen's Pro Toolkits finish migrating to our private Git server; once that's complete, this GitHub repo will be archived.
+> [!IMPORTANT]
+> ## 🔀 This repo has moved to Codeberg
+>
+> **The active copy now lives at [codeberg.org/Heathen-Engineering/Unity-Foundation-for-Steamworks](https://codeberg.org/Heathen-Engineering/Unity-Foundation-for-Steamworks)** — please point your git remote, UPM manifest, or Gem reference there going forward. That's where new commits, releases, and issues actually happen now.
+>
+> **This GitHub copy is preserved as-is and still works** for anyone already pointing at it, but it isn't receiving new updates. It will be archived (read-only) once every downstream package that depends on it has finished migrating too, not immediately.
+>
+> Questions? [Discord](https://discord.gg/6X3xrRc).
 
 # Foundation for Steamworks
 
