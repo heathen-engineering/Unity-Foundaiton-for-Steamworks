@@ -18,12 +18,15 @@ A lightweight, modular integration layer for [Steamworks.NET](https://steamworks
 -----
 
 ## Become a GitHub Sponsor
+
+**Prefer a one-time purchase?** Heathen's own storefront is live, direct source access at [heathen.group/pricing](https://heathen.group/pricing/), no sponsorship required.
+
 [![Discord](https://img.shields.io/badge/Discord--1877F2?style=social&logo=discord)](https://discord.gg/6X3xrRc)
 [![GitHub followers](https://img.shields.io/github/followers/heathen-engineering?style=social)](https://github.com/heathen-engineering?tab=followers)  
 Support Heathen by becoming a [GitHub Sponsor](https://github.com/sponsors/heathen-engineering). Sponsorship directly funds the development and maintenance of free tools like this, as well as our game development [Knowledge Base](https://heathen.group/) and community on [Discord](https://discord.gg/6X3xrRc).
 
 Sponsors also get access to our private SourceRepo, which includes developer tools for O3DE, Unreal, Unity, and Godot.  
-Learn more or explore other ways to support @ [heathen.group/kb](https://heathen.group/kb/do-more/)
+Learn more or explore other ways to support @ [heathen.group/kb](https://heathen.group/pricing/)
 
 -----
 
@@ -167,4 +170,3 @@ board.UploadScore(score, ELeaderboardUploadScoreMethod.k_ELeaderboardUploadScore
 | `Heathen.SteamworksIntegration` | Core data types (`UserData`, `AchievementData`) and components. |
 | `Heathen.SteamworksIntegration.API` | Low-level static wrappers for Steam interfaces. |
 | `SteamTools` | The generated wrapper (`Game`, `Interface`, `Events`). |
-
