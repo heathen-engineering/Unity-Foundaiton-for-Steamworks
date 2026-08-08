@@ -10,7 +10,7 @@
 # Foundation for Steamworks
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)
-![Maintained](https://img.shields.io/badge/Maintained%3F-On_Codeberg-green?style=flat-square)
+[![Maintained](https://img.shields.io/badge/Maintained%3F-On_Codeberg-green?style=flat-square)](https://codeberg.org/Heathen-Engineering/Unity-Foundation-for-Steamworks)
 ![Unity](https://img.shields.io/badge/Unity-6%20%2B-%23313131?style=flat-square&logo=unity&logoColor=white)
 [![Dependency](https://img.shields.io/badge/Dependency-Steamworks.NET-lightgrey?style=flat-square)](https://steamworks.github.io/)
 
