@@ -170,6 +170,18 @@ namespace Heathen.SteamworksIntegration.API
             public static bool IsSteamInBigPictureMode => SteamUtils.IsSteamInBigPictureMode();
 
             /// <summary>
+            /// Indicates whether the Steam client process is currently running on this machine.
+            /// This is a raw process check only — it does not require and is not affected by whether
+            /// <c>API.App.Client.Initialize</c> has been called. Use it to conditionally initialise
+            /// Steamworks only when Steam is actually present (e.g. an optional Steam integration in a
+            /// game that also ships outside Steam), rather than as a general pre-init gate: modern
+            /// <c>SteamAPI.InitEx</c> already handles "Steam isn't running" itself and reports it via its
+            /// own result code, and on some Linux Steam install methods (snap, flatpak) this check has
+            /// historically returned false negatives even when Steam was genuinely reachable.
+            /// </summary>
+            public static bool IsSteamRunning => SteamAPI.IsSteamRunning();
+
+            /// <summary>
             /// Indicates whether the Steam client is currently operating in VR mode.
             /// Use this property to check if Steam's runtime environment is configured for virtual reality applications.
             /// </summary>
